@@ -23,6 +23,10 @@ public class StorageHelper {
     private final Context context;
     private final StorageReference storageReference;
 
+    public interface Callback{
+        void onUploadSuccess(String url);
+    }
+
     public StorageHelper(Activity activity, StorageReference storageReference){
         this.activity = activity;
         this.storageReference = storageReference;
@@ -36,7 +40,7 @@ public class StorageHelper {
         activity.sendBroadcast(mediaScanIntent);
     }
 
-    public void uploadImageToFirebase(String fileName, Uri uri){
+    public void uploadImageToFirebase(String fileName, Uri uri, StorageHelper.Callback cb){
         Log.i("myTag", "uploading image");
         StorageReference image = storageReference.child("images/" + fileName);
         image.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -46,6 +50,7 @@ public class StorageHelper {
                     @Override
                     public void onSuccess(Uri uri) {
                         Log.i("myTag", "image url: " + uri);
+                        cb.onUploadSuccess(String.valueOf(uri));
                     }
                 });
                 Toast.makeText(context, "uploaded successfully",Toast.LENGTH_LONG).show();

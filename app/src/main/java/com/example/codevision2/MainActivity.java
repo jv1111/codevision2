@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,26 +12,18 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.codevision2.api.Repository;
 import com.example.codevision2.databinding.ActivityMainBinding;
 import com.example.codevision2.helper.CameraHelper;
 import com.example.codevision2.helper.StorageHelper;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private StorageHelper storageHelper;
 
     private CameraHelper cam;
+
+    private Repository repo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +49,21 @@ public class MainActivity extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
         storageHelper = new StorageHelper(this, storageReference);
         cam = new CameraHelper(this);
+        repo = new Repository();
+
         binding.btnCapture.setOnClickListener( v -> {
             //capture();
             cam.captureRequest();
+        });
+        binding.btnCompile.setOnClickListener( v -> {
+            String code = binding.etCode.getText().toString();
+            repo.submitCode(code, data -> {
+                try {
+                    binding.tvOutput.setText(data.getOutput());
+                }catch (Exception ex){
+                    binding.tvOutput.setText("\"Request exceeds for the day..\"");
+                }
+            });
         });
     }
 
@@ -85,7 +89,18 @@ public class MainActivity extends AppCompatActivity {
                 //binding.iv.setImageURI(Uri.fromFile(f));
 
                 storageHelper.addPicToGallery(f);
-                storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f));
+                storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
+                    @Override
+                    public void onUploadSuccess(String url) {
+                        Log.i("myTag", "i got the uri: "+ url);
+                        repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
+                            @Override
+                            public void onSuccess(String data) {
+                                binding.etCode.setText(data);
+                            }
+                        });
+                    }
+                });
 
             } else {
                 // Handle the case where the result was not OK
