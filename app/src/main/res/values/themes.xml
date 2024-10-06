@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.CodeVision2" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="colorPrimary">@color/primary_button</item>
+        <item name="android:statusBarColor">@color/black</item> <!-- For compatibility -->
     </style>
-
     <style name="Theme.CodeVision2" parent="Base.Theme.CodeVision2" />
 </resources>
