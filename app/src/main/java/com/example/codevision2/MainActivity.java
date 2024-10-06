@@ -22,7 +22,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.codevision2.api.Repository;
+import com.example.codevision2.api.model.JDoodleResponseModel;
 import com.example.codevision2.databinding.ActivityMainBinding;
+import com.example.codevision2.helper.AnimationUI;
 import com.example.codevision2.helper.CameraHelper;
 import com.example.codevision2.helper.StorageHelper;
 import com.google.firebase.storage.FirebaseStorage;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageHelper storageHelper;
     private CameraHelper cam;
     private Repository repo;
+    private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
 
     @Override
@@ -48,22 +51,42 @@ public class MainActivity extends AppCompatActivity {
         setStatusbar();
         storageReference = FirebaseStorage.getInstance().getReference();
         storageHelper = new StorageHelper(this, storageReference);
+        anim = new AnimationUI(this);
         cam = new CameraHelper(this);
         repo = new Repository();
 
-        binding.btnCapture.setOnClickListener( v -> {
-            cam.captureRequest();
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                cam.captureRequest();
+            }
         });
-        binding.btnCompile.setOnClickListener( v -> {
-            String code = binding.etCode.getText().toString();
-            repo.submitCode(code, data -> {
-                try {
-                    binding.tvOutput.setText(data.getOutput());
-                }catch (Exception ex){
-                    binding.tvOutput.setText("\"Request exceeds for the day..\"");
-                }
-            });
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCompile, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                String code = binding.etCode.getText().toString();
+                anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
+                repo.submitCode(code, new Repository.RepoCallback<JDoodleResponseModel>() {
+                    @Override
+                    public void onSuccess(JDoodleResponseModel data) {
+                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
+                        try {
+                            binding.tvOutput.setText(data.getOutput());
+                        }catch (Exception ex){
+                            binding.tvOutput.setText("\"Request exceeds for the day..\"");
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
+                    }
+                });
+            }
         });
+
     }
 
     private void setStatusbar(){
@@ -123,6 +146,11 @@ public class MainActivity extends AppCompatActivity {
                             public void onSuccess(String data) {
                                 setConversionProgress(100,0, "Finished");
                                 binding.etCode.setText(data);
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                             }
                         });
                     }

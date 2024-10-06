@@ -17,6 +17,7 @@ public class Repository {
 
     public interface RepoCallback<T>{
         void onSuccess(T data);
+        void onFailed(String errorMessage);
     }
 
     private RetrofitInstance retrofitInstance = new RetrofitInstance(Constant.BASE_URL);
@@ -43,6 +44,7 @@ public class Repository {
             @Override
             public void onFailure(Call<JDoodleResponseModel> call, Throwable t) {
                 Log.e("myTag retro failed", t.getMessage());
+                cb.onFailed("Something went wrong.");
             }
         });
     }
@@ -56,12 +58,14 @@ public class Repository {
                     Log.i("myTag", "ocr response code");
                     if(response.code() == 404){
                         Log.i("myTag", "There is no text in the image.");
+                        cb.onFailed("There is no text in the image.");
                     }else{
                         Log.i("myTag", response.body().getText());
                         cb.onSuccess(response.body().getText());
                     }
                 }else{
                     Log.i("myTag", "error response");
+                    cb.onFailed("Something went wrong.");
                 }
             }
 

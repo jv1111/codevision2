@@ -23,12 +23,12 @@
         <RelativeLayout
             android:id="@+id/btnCapture"
             android:clickable="true"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:background="@drawable/round_button">
+            android:background="@drawable/round_button_20">
             <ImageView
                 android:layout_width="35dp"
                 android:layout_height="35dp"
@@ -36,16 +36,30 @@
                 android:layout_centerInParent="true"/>
         </RelativeLayout>
 
-
-
-        <Button
+        <RelativeLayout
             android:id="@+id/btnCompile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Run"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintTop_toBottomOf="@+id/tilCode"
             app:layout_constraintLeft_toLeftOf="parent"
-            />
+            android:background="@drawable/round_button_20"
+            >
+            <TextView
+                android:id="@+id/tvCompile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Run"
+                />
+            <ProgressBar
+                android:id="@+id/pbCompile"
+                android:layout_centerInParent="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="invisible"/>
+        </RelativeLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilCode"
             android:layout_width="match_parent"
@@ -59,7 +73,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etCode"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="250dp"
                 android:text="@string/codeSample"
                 android:textColor="@color/white"
                 android:lines="5"
@@ -67,8 +81,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
+            android:id="@+id/layoutOutputOuter"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintTop_toBottomOf="@id/btnCompile"
             app:layout_constraintBottom_toTopOf="@id/btnCapture"
             android:orientation="vertical"
