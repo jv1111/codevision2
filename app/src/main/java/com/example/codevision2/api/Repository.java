@@ -53,8 +53,13 @@ public class Repository {
             @Override
             public void onResponse(Call<OCRResponseModel> call, Response<OCRResponseModel> response) {
                 if(response.isSuccessful()){
-                    Log.i("myTag", response.body().getText());
-                    cb.onSuccess(response.body().getText());
+                    Log.i("myTag", "ocr response code");
+                    if(response.code() == 404){
+                        Log.i("myTag", "There is no text in the image.");
+                    }else{
+                        Log.i("myTag", response.body().getText());
+                        cb.onSuccess(response.body().getText());
+                    }
                 }else{
                     Log.i("myTag", "error response");
                 }

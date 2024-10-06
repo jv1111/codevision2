@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -34,10 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private StorageReference storageReference;
     private StorageHelper storageHelper;
-
     private CameraHelper cam;
-
     private Repository repo;
+    private static final int ORC_PART_PROGRESS = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         repo = new Repository();
 
         binding.btnCapture.setOnClickListener( v -> {
-            //capture();
             cam.captureRequest();
         });
         binding.btnCompile.setOnClickListener( v -> {
@@ -81,6 +80,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setConversionProgress(int uploadProgress, int orcPartProgress, String message){
+        int orcTotalProgress = uploadProgress - orcPartProgress;
+        binding.tvLoadingMessage.setText(message);
+        String strProgress = "0%";
+        if(orcTotalProgress != 100){
+            if(binding.layoutLoading.getVisibility() != View.VISIBLE) binding.layoutLoading.setVisibility(View.VISIBLE);
+            if(orcTotalProgress > 0) strProgress = orcTotalProgress + "%";
+            binding.tvLoadingPercentage.setText(strProgress);
+        }else {
+            binding.layoutLoading.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -100,19 +112,24 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 File f = new File(cam.currentPhotoPath);
                 Log.i("myTag", "absolute file: " + Uri.fromFile(f));
-                //binding.iv.setImageURI(Uri.fromFile(f));
-
                 storageHelper.addPicToGallery(f);
                 storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
                     @Override
                     public void onUploadSuccess(String url) {
                         Log.i("myTag", "i got the uri: "+ url);
+                        setConversionProgress(100, ORC_PART_PROGRESS, "Converting image to text");
                         repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
                             @Override
                             public void onSuccess(String data) {
+                                setConversionProgress(100,0, "Finished");
                                 binding.etCode.setText(data);
                             }
                         });
+                    }
+                    @Override
+                    public void onProgressCallback(int progress) {
+                        Log.i("myTag", "progress in main: " + progress);
+                        setConversionProgress(progress, ORC_PART_PROGRESS, "preparing the image.");
                     }
                 });
 

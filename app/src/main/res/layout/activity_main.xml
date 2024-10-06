@@ -113,7 +113,7 @@
         android:background="@color/black_30"
         android:focusable="true"
         android:padding="10dp"
-        android:visibility="visible">
+        android:visibility="gone">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -126,11 +126,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <TextView
-                android:id="@+id/tvLoading"
+                android:id="@+id/tvLoadingMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="loading"
                 android:textSize="16sp" />
+            <TextView
+                android:id="@+id/tvLoadingPercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0%"/>
         </LinearLayout>
     </RelativeLayout>
 

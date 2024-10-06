@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.example.codevision2.MainActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -25,6 +26,7 @@ public class StorageHelper {
 
     public interface Callback{
         void onUploadSuccess(String url);
+        void onProgressCallback(int progress);
     }
 
     public StorageHelper(Activity activity, StorageReference storageReference){
@@ -53,12 +55,21 @@ public class StorageHelper {
                         cb.onUploadSuccess(String.valueOf(uri));
                     }
                 });
-                Toast.makeText(context, "uploaded successfully",Toast.LENGTH_LONG).show();
+                Log.i("myTag", "uploaded successfully");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.i("myTag", "upload failed");
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                int totalByte = Math.toIntExact(snapshot.getTotalByteCount());
+                int transferredByte = Math.toIntExact(snapshot.getBytesTransferred());
+                int progress = (int) (((double) transferredByte / totalByte) * 100);
+                Log.i("myTag", "progress: "+ progress);
+                cb.onProgressCallback(progress);
             }
         });
     }
