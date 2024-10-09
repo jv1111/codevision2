@@ -54,18 +54,22 @@ public class Repository {
         call.enqueue(new Callback<OCRResponseModel>() {
             @Override
             public void onResponse(Call<OCRResponseModel> call, Response<OCRResponseModel> response) {
-                if(response.isSuccessful()){
-                    Log.i("myTag", "ocr response code");
-                    if(response.code() == 404){
-                        Log.i("myTag", "There is no text in the image.");
-                        cb.onFailed("There is no text in the image.");
-                    }else{
-                        Log.i("myTag", response.body().getText());
-                        cb.onSuccess(response.body().getText());
-                    }
+                OCRResponseModel responseModel = response.body();
+                if(responseModel == null){
+                    cb.onFailed("Null response");
                 }else{
-                    Log.i("myTag", "error response");
-                    cb.onFailed("Something went wrong.");
+                    if(response.isSuccessful()){
+                        Log.i("myTag", "ocr response code");
+                        if(!responseModel.getStatus()){
+                            cb.onFailed(responseModel.getErrorMessage());
+                        }else{
+                            Log.i("myTag", response.body().getText());
+                            cb.onSuccess(response.body().getText());
+                        }
+                    }else{
+                        Log.i("myTag", "error response");
+                        cb.onFailed("Something went wrong.");
+                    }
                 }
             }
 

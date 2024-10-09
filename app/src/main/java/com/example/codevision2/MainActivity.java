@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onFailed(String errorMessage) {
                                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                                setConversionProgress(100,0, "Finished");
                             }
                         });
                     }
