@@ -3,6 +3,7 @@ package com.example.codevision2.api;
 import android.util.Log;
 
 import com.example.codevision2.Constant;
+import com.example.codevision2.ENV;
 import com.example.codevision2.api.model.JDoodleRequestModel;
 import com.example.codevision2.api.model.JDoodleResponseModel;
 import com.example.codevision2.api.model.OCRResponseModel;
@@ -21,15 +22,15 @@ public class Repository {
     }
 
     private RetrofitInstance retrofitInstance = new RetrofitInstance(Constant.BASE_URL);
-    private RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(Constant.OCR_API_URL);
+    private RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(ENV.OCR_API_URL);
 
     private Service apiService = retrofitInstance.getRetrofit().create(Service.class);
     private ServiceOCR ocrService = retrofitInstanceOCR.getRetrofit().create(ServiceOCR.class);
 
     public void submitCode(String code,RepoCallback<JDoodleResponseModel> cb){
         JDoodleRequestModel data = new JDoodleRequestModel(
-                Constant.JDOODLE_CID,
-                Constant.JDOODLE_SECRET,
+                ENV.JDOODLE_CID,
+                ENV.JDOODLE_SECRET,
                 code,
                 "java"
         );

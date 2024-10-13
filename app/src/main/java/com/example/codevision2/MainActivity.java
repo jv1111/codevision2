@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProgressCallback(int progress) {
                         Log.i("myTag", "progress in main: " + progress);
-                        setConversionProgress(progress, ORC_PART_PROGRESS, "preparing the image.");
+                        setConversionProgress(progress, ORC_PART_PROGRESS, "Preparing the image.");
                     }
                 });
 
