@@ -130,7 +130,7 @@
         android:background="@color/black_30"
         android:focusable="true"
         android:padding="10dp"
-        android:visibility="gone">
+        android:visibility="visible">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -146,7 +146,7 @@
                 android:id="@+id/tvLoadingMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="loading"
+                android:text="Converting the image to text"
                 android:textSize="16sp" />
             <TextView
                 android:id="@+id/tvLoadingPercentage"

@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onUploadSuccess(String url) {
                         Log.i("myTag", "i got the uri: "+ url);
-                        setConversionProgress(100, ORC_PART_PROGRESS, "Converting image to text");
+                        setConversionProgress(100, ORC_PART_PROGRESS, "Converting the image to text");
                         repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
                             @Override
                             public void onSuccess(String data) {
