@@ -43,7 +43,6 @@ public class StorageHelper {
     }
 
     public void uploadImageToFirebase(String fileName, Uri uri, StorageHelper.Callback cb){
-        Log.i("myTag", "uploading image");
         StorageReference image = storageReference.child("images/" + fileName);
         image.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -51,11 +50,9 @@ public class StorageHelper {
                 image.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Log.i("myTag", "image url: " + uri);
                         cb.onUploadSuccess(String.valueOf(uri));
                     }
                 });
-                Log.i("myTag", "uploaded successfully");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -68,7 +65,6 @@ public class StorageHelper {
                 int totalByte = Math.toIntExact(snapshot.getTotalByteCount());
                 int transferredByte = Math.toIntExact(snapshot.getBytesTransferred());
                 int progress = (int) (((double) transferredByte / totalByte) * 100);
-                Log.i("myTag", "progress: "+ progress);
                 cb.onProgressCallback(progress);
             }
         });

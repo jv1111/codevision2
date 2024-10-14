@@ -134,12 +134,10 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == CameraHelper.REQUEST_CODE_CAPTURE){
             if (resultCode == Activity.RESULT_OK) {
                 File f = new File(cam.currentPhotoPath);
-                Log.i("myTag", "absolute file: " + Uri.fromFile(f));
                 storageHelper.addPicToGallery(f);
                 storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
                     @Override
                     public void onUploadSuccess(String url) {
-                        Log.i("myTag", "i got the uri: "+ url);
                         setConversionProgress(100, ORC_PART_PROGRESS, "Converting the image to text");
                         repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
                             @Override
@@ -157,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     @Override
                     public void onProgressCallback(int progress) {
-                        Log.i("myTag", "progress in main: " + progress);
                         setConversionProgress(progress, ORC_PART_PROGRESS, "Preparing the image.");
                     }
                 });

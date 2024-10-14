@@ -34,10 +34,8 @@ public class CameraHelper {
     public void captureRequest() {
         if(ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(activity, new String[] {android.Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
-            Log.i("myTag", "requesting permission");
         }else{
             //openCamera();
-            Log.i("myTag", "opening cam");
             takeImageRequest();
         }
     }
@@ -45,7 +43,6 @@ public class CameraHelper {
     public void takeImageRequest(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if(takePictureIntent.resolveActivity(activity.getPackageManager()) != null){
-            Log.i("myTag", "starting");
             File photoFile = null;
             try {
                 photoFile = createImageFile();
@@ -55,7 +52,6 @@ public class CameraHelper {
 
             //continue only if the file is created
             if(photoFile != null){
-                Log.e("myTag", "taking pic");
                 Uri photoUri = FileProvider.getUriForFile(context,
                         activity.getApplicationContext().getPackageName() + ".fileprovider", // Use application ID
                         photoFile);
@@ -63,7 +59,6 @@ public class CameraHelper {
                 activity.startActivityForResult(takePictureIntent, REQUEST_CODE_CAPTURE);
             }
         }else{
-            Log.i("myTag", "takePictureIntent.resolveActivity(getPackageManager()) is null");
         }
     }
 

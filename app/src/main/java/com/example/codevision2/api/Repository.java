@@ -60,15 +60,12 @@ public class Repository {
                     cb.onFailed("Null response");
                 }else{
                     if(response.isSuccessful()){
-                        Log.i("myTag", "ocr response code");
                         if(!responseModel.getStatus()){
                             cb.onFailed(responseModel.getErrorMessage());
                         }else{
-                            Log.i("myTag", response.body().getText());
                             cb.onSuccess(response.body().getText());
                         }
                     }else{
-                        Log.i("myTag", "error response");
                         cb.onFailed("Something went wrong.");
                     }
                 }
