@@ -35,7 +35,6 @@ public class CameraHelper {
         if(ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(activity, new String[] {android.Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
         }else{
-            //openCamera();
             takeImageRequest();
         }
     }
@@ -50,7 +49,6 @@ public class CameraHelper {
                 Log.e("myTag", ex.getMessage());
             }
 
-            //continue only if the file is created
             if(photoFile != null){
                 Uri photoUri = FileProvider.getUriForFile(context,
                         activity.getApplicationContext().getPackageName() + ".fileprovider", // Use application ID

@@ -7,24 +7,24 @@ import com.example.codevision2.ENV;
 import com.example.codevision2.api.model.JDoodleRequestModel;
 import com.example.codevision2.api.model.JDoodleResponseModel;
 import com.example.codevision2.api.model.OCRResponseModel;
-import com.example.codevision2.api.services.Service;
+import com.example.codevision2.api.services.ServiceJDoodle;
 import com.example.codevision2.api.services.ServiceOCR;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Repository {
+public class RepositoryOCR {
 
     public interface RepoCallback<T>{
         void onSuccess(T data);
         void onFailed(String errorMessage);
     }
 
-    private RetrofitInstance retrofitInstance = new RetrofitInstance(Constant.BASE_URL);
+    private RetrofitInstance retrofitInstance = new RetrofitInstance(Constant.JdoodleApi);
     private RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(ENV.OCR_API_URL);
 
-    private Service apiService = retrofitInstance.getRetrofit().create(Service.class);
+    private ServiceJDoodle apiService = retrofitInstance.getRetrofit().create(ServiceJDoodle.class);
     private ServiceOCR ocrService = retrofitInstanceOCR.getRetrofit().create(ServiceOCR.class);
 
     public void submitCode(String code,RepoCallback<JDoodleResponseModel> cb){
@@ -73,7 +73,7 @@ public class Repository {
 
             @Override
             public void onFailure(Call<OCRResponseModel> call, Throwable t) {
-
+                cb.onFailed("Something went wrong.");
             }
         });
     }

@@ -3,11 +3,9 @@ package com.example.codevision2;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,8 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.codevision2.api.Repository;
-import com.example.codevision2.api.model.JDoodleResponseModel;
+import com.example.codevision2.api.RepositoryOCR;
 import com.example.codevision2.databinding.ActivityMainBinding;
 import com.example.codevision2.helper.AnimationUI;
 import com.example.codevision2.helper.CameraHelper;
@@ -38,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference storageReference;
     private StorageHelper storageHelper;
     private CameraHelper cam;
-    private Repository repo;
+    private RepositoryOCR repo;
     private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
 
@@ -53,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         storageHelper = new StorageHelper(this, storageReference);
         anim = new AnimationUI(this);
         cam = new CameraHelper(this);
-        repo = new Repository();
+        repo = new RepositoryOCR();
 
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
@@ -67,23 +64,7 @@ public class MainActivity extends AppCompatActivity {
             public void onRelease() {
                 String code = binding.etCode.getText().toString();
                 anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
-                repo.submitCode(code, new Repository.RepoCallback<JDoodleResponseModel>() {
-                    @Override
-                    public void onSuccess(JDoodleResponseModel data) {
-                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
-                        try {
-                            binding.tvOutput.setText(data.getOutput());
-                        }catch (Exception ex){
-                            binding.tvOutput.setText("\"Request exceeds for the day..\"");
-                        }
-                    }
-
-                    @Override
-                    public void onFailed(String errorMessage) {
-                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
-                    }
-                });
+                //submit the code with ai
             }
         });
 
@@ -139,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onUploadSuccess(String url) {
                         setConversionProgress(100, ORC_PART_PROGRESS, "Converting the image to text");
-                        repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
+                        repo.getTextFromImage(url, new RepositoryOCR.RepoCallback<String>() {
                             @Override
                             public void onSuccess(String data) {
                                 setConversionProgress(100,0, "Finished");
@@ -158,9 +139,8 @@ public class MainActivity extends AppCompatActivity {
                         setConversionProgress(progress, ORC_PART_PROGRESS, "Preparing the image.");
                     }
                 });
-
-            } else {
-                // Handle the case where the result was not OK
+            }
+            else {
                 Toast.makeText(this, "Failed to take picture", Toast.LENGTH_SHORT).show();
             }
         }
