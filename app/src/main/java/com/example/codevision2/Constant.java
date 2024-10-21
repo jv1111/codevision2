@@ -25,10 +25,10 @@ public class Constant {
                     "\n" +
                     "Output: \n" +
                     "\n" +
-                    "```\n" +
+                    "\n" +
                     "name: Jill\n" +
                     "name: Jack\n" +
-                    "```\n" +
+                    "\n" +
                     "\n" +
                     "Explanation: \n" +
                     "\n" +
@@ -100,5 +100,7 @@ public class Constant {
                     "\n" +
                     "Explanation:\n" +
                     "\n" +
-                    "The error occurs because Java requires a semicolon at the end of each statement. In your code, the `System.out.println(\"Hello, World!\")` line is missing it, causing a syntax error. To fix this, simply add the semicolon.\n";
+                    "The error occurs because Java requires a semicolon at the end of each statement. In your code, the `System.out.println(\"Hello, World!\")` line is missing it, causing a syntax error. To fix this, simply add the semicolon.\n" +
+                    "(THIS IS MY CODE: \n";
+    public static String AI_CLOSING_SCRIPT = "\n)";
 }

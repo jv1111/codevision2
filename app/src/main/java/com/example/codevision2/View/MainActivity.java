@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private Repository repo;
     private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
+    private Boolean isFirstCompileWithAI = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,18 +66,23 @@ public class MainActivity extends AppCompatActivity {
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCompile, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                String code = binding.etCode.getText().toString();
-                //anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
-                Log.i("myTag", Constant.AI_SCRIPT);
-                repo.submitCodeWithAI(Constant.AI_SCRIPT, new Repository.RepoCallback<String>() {
+                String code = Constant.AI_SCRIPT + binding.etCode.getText().toString() + Constant.AI_CLOSING_SCRIPT;
+                anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
+                binding.tvOutput.setText("Compiling");
+                //TODO Detect a scanner
+                repo.submitCodeWithAI(code, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
                         Log.i("myTag response from ai", data);
+                        binding.tvOutput.setText(data);
+                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
                         Log.e("myTag error: ",errorMessage);
+                        binding.tvOutput.setText("Failed");
+                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
                     }
                 });
             }

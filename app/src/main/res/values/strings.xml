@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">CodeVision2</string>
-    <string name="codeSample">public class Main {public static void main(String[] args) {System.out.print(\"Hello world\");}}</string>
+    <string name="codeSample">public class Main {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.print(\"Hello world\");\n}}</string>
 </resources>
