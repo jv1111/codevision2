@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,7 +20,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.codevision2.api.RepositoryOCR;
+import com.example.codevision2.api.Repository;
 import com.example.codevision2.databinding.ActivityMainBinding;
 import com.example.codevision2.helper.AnimationUI;
 import com.example.codevision2.helper.CameraHelper;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference storageReference;
     private StorageHelper storageHelper;
     private CameraHelper cam;
-    private RepositoryOCR repo;
+    private Repository repo;
     private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
 
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         storageHelper = new StorageHelper(this, storageReference);
         anim = new AnimationUI(this);
         cam = new CameraHelper(this);
-        repo = new RepositoryOCR();
+        repo = new Repository();
 
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
@@ -63,11 +64,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRelease() {
                 String code = binding.etCode.getText().toString();
-                anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
-                //submit the code with ai
+                //anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
+                Log.i("myTag", Constant.AI_SCRIPT);
+                repo.submitCodeWithAI(Constant.AI_SCRIPT, new Repository.RepoCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) {
+                        Log.i("myTag response from ai", data);
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+                        Log.e("myTag error: ",errorMessage);
+                    }
+                });
             }
         });
-
     }
 
     private void setStatusbar(){
@@ -120,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onUploadSuccess(String url) {
                         setConversionProgress(100, ORC_PART_PROGRESS, "Converting the image to text");
-                        repo.getTextFromImage(url, new RepositoryOCR.RepoCallback<String>() {
+                        repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
                             @Override
                             public void onSuccess(String data) {
                                 setConversionProgress(100,0, "Finished");
