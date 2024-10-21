@@ -28,13 +28,13 @@ public class Repository {
         void onFailed(String errorMessage);
     }
 
-    private RetrofitInstance retrofitInstance = new RetrofitInstance(Constant.JdoodleApi);
-    private RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(ENV.OCR_API_URL);
-    private RetrofitInstance retrofitInstanceAI = new RetrofitInstance(ENV.AI_API_URL);
+    private final RetrofitInstance retrofitInstance = new RetrofitInstance(Constant.JdoodleApi);
+    private final RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(ENV.OCR_API_URL);
+    private final RetrofitInstance retrofitInstanceAI = new RetrofitInstance(ENV.AI_API_URL);
 
-    private ServiceJDoodle apiService = retrofitInstance.getRetrofit().create(ServiceJDoodle.class);
-    private ServiceOCR ocrService = retrofitInstanceOCR.getRetrofit().create(ServiceOCR.class);
-    private ServiceAI aiService = retrofitInstanceAI.getRetrofit().create(ServiceAI.class);
+    private final ServiceJDoodle apiService = retrofitInstance.getRetrofit().create(ServiceJDoodle.class);
+    private final ServiceOCR ocrService = retrofitInstanceOCR.getRetrofit().create(ServiceOCR.class);
+    private final ServiceAI aiService = retrofitInstanceAI.getRetrofit().create(ServiceAI.class);
 
     public void submitCodeWithJDoodle(String code,RepoCallback<JDoodleResponseModel> cb){
         JDoodleRequestModel data = new JDoodleRequestModel(

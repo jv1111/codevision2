@@ -12,7 +12,7 @@ import retrofit2.http.Query;
 public interface ServiceOCR {
 
     @Headers({
-            "x-rapidapi-host: ocr-extract-text.p.rapidapi.com",
+            "x-rapidapi-host: " + ENV.OCR_API_HOST,
             "x-rapidapi-key: " + ENV.RAPID_API_KEY
     })
     @GET("/ocr")

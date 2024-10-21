@@ -1,4 +1,4 @@
-package com.example.codevision2;
+package com.example.codevision2.View;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,6 +20,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.codevision2.Constant;
+import com.example.codevision2.R;
 import com.example.codevision2.api.Repository;
 import com.example.codevision2.databinding.ActivityMainBinding;
 import com.example.codevision2.helper.AnimationUI;
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
             else {
-                Toast.makeText(this, "Failed to take picture", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to take a picture", Toast.LENGTH_SHORT).show();
             }
         }
     }
