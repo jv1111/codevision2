@@ -23,6 +23,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.codevision2.Constant;
 import com.example.codevision2.R;
 import com.example.codevision2.api.Repository;
+import com.example.codevision2.api.WebSocketCompiler;
 import com.example.codevision2.databinding.ActivityMainBinding;
 import com.example.codevision2.helper.AnimationUI;
 import com.example.codevision2.helper.CameraHelper;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         anim = new AnimationUI(this);
         cam = new CameraHelper(this);
         repo = new Repository();
+        WebSocketCompiler.connectWebSocket(this);
 
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
