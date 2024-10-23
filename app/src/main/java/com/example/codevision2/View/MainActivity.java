@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private Repository repo;
     private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
-    private Boolean isFirstCompileWithAI = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,47 +66,7 @@ public class MainActivity extends AppCompatActivity {
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCompile, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                binding.etCode.setText(Constant.codeSample);
-                String code = Constant.AI_SCRIPT + binding.etCode.getText() + Constant.AI_CODE_TAIL;
-                //Log.i("myTag my code", code);
-                String sampleResult = Constant.resultSample;
-                String responseResult = sampleResult;
-                responseResult = StringFormatter.removeBackticks(responseResult);
-                responseResult = StringFormatter.removeSCANNERTag(responseResult);
-                Log.i("myTag sample result: ", responseResult);
-                inputForScannerHandler(StringFormatter.containsScanner(sampleResult), responseResult);
-                //compileWithAI(code);
-                //TODO PREPARE FOR THE ACTUAL CONVO
-            }
-        });
-    }
 
-    private void inputForScannerHandler(Boolean isVisible, String title){
-        if(isVisible){
-            binding.tvScannerTitle.setText(title);
-            binding.layoutScanner.setVisibility(View.VISIBLE);
-        }else{
-            binding.layoutScanner.setVisibility(View.GONE);
-        }
-    }
-
-    private void compileWithAI(String code){
-        anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
-        binding.tvOutput.setText("Compiling");
-        //TODO Detect a scanner
-        repo.submitCodeWithAI(code, new Repository.RepoCallback<String>() {
-            @Override
-            public void onSuccess(String data) {
-                Log.i("myTag response from ai", data);
-                binding.tvOutput.setText(data);
-                anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
-            }
-
-            @Override
-            public void onFailed(String errorMessage) {
-                Log.e("myTag error: ",errorMessage);
-                binding.tvOutput.setText("Failed");
-                anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
             }
         });
     }
