@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private Repository repo;
     private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
+    private String outputStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +69,10 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCompile, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                String testCode = "public class Main{public static voi main(String[] args){System.out.println(\"Hi\");}}";
-                repo.runAndCompile(testCode, new Repository.RepoCallback<String>() {
+                Log.i("myTag code: ", binding.etCode.getText().toString());
+                outputStr = "";
+                binding.tvOutput.setText("Compiling");
+                repo.runAndCompile(binding.etCode.getText().toString(), new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
                         Log.i("myTag compile output: ", "success");
@@ -81,6 +84,14 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                     }
                 });
             }
+        });
+
+        binding.btnSendInput.setOnClickListener(v -> {
+            String input = String.valueOf(binding.etInput.getText());
+            Log.i("myTag btn: ", input);
+            outputStr = outputStr + input;
+            binding.tvOutput.setText(outputStr);
+            WebSocketCompiler.sendMessage(input);
         });
     }
 
@@ -162,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
     @Override
     public void onCodeRunOutput(String output) {
-        binding.tvOutput.setText(output);
+        outputStr = outputStr + "\n" + output;
+        binding.tvOutput.setText(outputStr);
     }
 }

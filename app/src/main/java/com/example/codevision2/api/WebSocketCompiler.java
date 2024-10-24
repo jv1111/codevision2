@@ -54,4 +54,11 @@ public class WebSocketCompiler {
             }
         });
     }
-}
+
+    public static void sendMessage(String message){
+        if (webSocket != null) {
+            webSocket.send(message);
+        } else {
+            Log.e("WebSocketCompiler", "WebSocket is not connected.");
+        }
+    }}

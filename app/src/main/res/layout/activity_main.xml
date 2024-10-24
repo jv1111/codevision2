@@ -105,7 +105,8 @@
                 <ScrollView
                     android:id="@+id/svOutput"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:scrollbars="vertical">
                     <RelativeLayout
                         android:id="@+id/layoutOutput"
@@ -118,10 +119,46 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
-                            android:text=""
+                            android:text="jdpoajdoajpojdpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjoj"
                             android:layout_margin="10dp"/>
                     </RelativeLayout>
                 </ScrollView>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    >
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilInput"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:boxBackgroundColor="@color/black"
+                        app:hintTextColor="@color/white"
+                        app:hintEnabled="true"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@id/btnSendInput"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:hint="Input">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="jwoqejqwjpowjd"
+                            android:textColor="@color/white"
+                            android:lines="1"
+                            android:maxHeight="300dp"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        android:id="@+id/btnSendInput"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:text="Send"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -158,70 +195,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0%"/>
-        </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/layoutScanner"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black_30"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone">
-        <LinearLayout
-            android:layout_centerInParent="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/round_shape_20_white"
-            android:layout_margin="20dp"
-            android:padding="20dp"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tvScannerTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Scanner detected: "/>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hintTextColor="@color/black"
-                app:hintEnabled="true"
-                android:hint="Enter your input here">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/codeSample"
-                    android:textColor="@color/white"
-                    android:lines="1"
-                    android:maxHeight="300dp"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <RelativeLayout
-                android:id="@+id/btnEnterInput"
-                android:layout_width="70dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/round_button_20"
-                android:layout_gravity="end"
-                >
-                <TextView
-                    android:id="@+id/tvEnterInput"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="Send"
-                    />
-                <ProgressBar
-                    android:id="@+id/pbEnterInput"
-                    android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:visibility="invisible"/>
-            </RelativeLayout>
-
         </LinearLayout>
     </RelativeLayout>
 
