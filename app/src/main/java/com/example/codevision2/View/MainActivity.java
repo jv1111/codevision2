@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
     private String outputStr;
+    private Boolean isInfoActive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,16 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         cam = new CameraHelper(this);
         repo = new Repository();
         WebSocketCompiler.connectWebSocket(this, this);
-        //TODO CLEAN UP AND ADD A POP UP FOR THE EXPLANATION
+        buttonsFunction();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(isInfoActive) infoViewHandler(false);
+        else super.onBackPressed();
+    }
+
+    private void buttonsFunction(){
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
@@ -88,11 +98,27 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
         binding.btnSendInput.setOnClickListener(v -> {
             String input = String.valueOf(binding.etInput.getText());
+            binding.etInput.setText("");
             Log.i("myTag btn: ", input);
             outputStr = outputStr + input;
             binding.tvOutput.setText(outputStr);
             WebSocketCompiler.sendMessage(input);
         });
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                infoViewHandler(true);
+            }
+        });
+    }
+
+    private void infoViewHandler(Boolean isShown){
+        isInfoActive = isShown;
+        int showInfo;
+        if(isShown) showInfo = View.VISIBLE;
+        else showInfo = View.GONE;
+        binding.layoutInfo.setVisibility(showInfo);
     }
 
     private void setStatusbar(){
@@ -172,8 +198,14 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     }
 
     @Override
-    public void onCodeRunOutput(String output) {
+    public void onCodeRunOutput(String output, Boolean isEnded) {
         outputStr = outputStr + "\n" + output;
         binding.tvOutput.setText(outputStr);
+        Log.i("myTag output: ", String.valueOf(isEnded));
+        if(isEnded){
+            binding.btnHelp.setVisibility(View.VISIBLE);
+        }else{
+            binding.btnHelp.setVisibility(View.GONE);
+        }
     }
 }

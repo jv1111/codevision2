@@ -7,6 +7,8 @@ import android.widget.Toast;
 import com.example.codevision2.Constant;
 import com.example.codevision2.ENV;
 
+import org.json.JSONObject;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -19,7 +21,7 @@ public class WebSocketCompiler {
     public static OkHttpClient client = new OkHttpClient();
 
     public interface ICompiler{
-        void onCodeRunOutput(String output);
+        void onCodeRunOutput(String output, Boolean isEnded);
     }
 
     public static void connectWebSocket(Activity activity, ICompiler cb) {
@@ -34,10 +36,21 @@ public class WebSocketCompiler {
             }
 
             @Override
-            public void onMessage(WebSocket webSocket, String text) {
+            public void onMessage(WebSocket webSocket, String data) {
                 activity.runOnUiThread(()->{
-                    Log.i("myTag on message", "got the message");
-                    cb.onCodeRunOutput(text);
+                    try{
+                        Log.i("myTag on message", "got the message");
+                        JSONObject jsonObject = new JSONObject(data);
+
+                        String extractedMessage = jsonObject.getString("message");
+                        Boolean extractedIsEnded = jsonObject.getBoolean("isEnded");
+
+                        System.out.println("Extracted Message: " + extractedMessage);
+                        cb.onCodeRunOutput(extractedMessage, extractedIsEnded);
+                    }catch (Exception ex){
+                        Log.e("myTag error: ", ex.getMessage());
+                    }
+
                 });
             }
 
