@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         cam = new CameraHelper(this);
         repo = new Repository();
         WebSocketCompiler.connectWebSocket(this, this);
-
+        //TODO CLEAN UP AND ADD A POP UP FOR THE EXPLANATION
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
             public void onRelease() {

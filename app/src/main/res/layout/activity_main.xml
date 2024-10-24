@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:scaleType="centerCrop"
     tools:context=".View.MainActivity">
-    
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -84,15 +84,15 @@
                     android:maxHeight="300dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutOutputOuter"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
+                android:padding="10dp"
                 app:layout_constraintTop_toBottomOf="@id/btnCompile"
                 app:layout_constraintBottom_toTopOf="@id/btnCapture"
-                android:orientation="vertical"
                 android:background="@drawable/round_shape_20">
                 <TextView
                     android:layout_width="match_parent"
@@ -101,25 +101,46 @@
                     android:layout_margin="10dp"
                     android:textColor="@color/white"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/svOutput"/>
+                    app:layout_constraintTop_toTopOf="parent"/>
+                <RelativeLayout
+                    android:id="@+id/btnHelp"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone">
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/baseline_help_outline_24"
+                        />
+                </RelativeLayout>
+
                 <ScrollView
                     android:id="@+id/svOutput"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:scrollbars="vertical">
+                    android:scrollbars="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/btnHelp"
+                    app:layout_constraintBottom_toTopOf="@id/layoutInput"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent">
                     <RelativeLayout
                         android:id="@+id/layoutOutput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="200dp">
+                        android:minHeight="200dp"
+                        >
                         <TextView
                             android:id="@+id/tvOutput"
                             android:layout_centerInParent="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
-                            android:text="jdpoajdoajpojdpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjojpojawpodjapwjdjapwodjopoajodjpaojdpoadjapodjoajwdopjoj"
+                            android:text=""
                             android:layout_margin="10dp"/>
                     </RelativeLayout>
                 </ScrollView>
@@ -128,6 +149,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                     >
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilInput"
@@ -145,7 +169,7 @@
                             android:id="@+id/etInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="jwoqejqwjpowjd"
+                            android:text=""
                             android:textColor="@color/white"
                             android:lines="1"
                             android:maxHeight="300dp"/>
@@ -159,7 +183,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:text="Send"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -196,6 +220,45 @@
                 android:layout_height="wrap_content"
                 android:text="0%"/>
         </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black_30"
+        android:focusable="true"
+        android:clickable="true"
+        android:padding="10dp"
+        android:visibility="invisible">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_shape_20_white"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvExplanationTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/agbalumo"
+                android:text="Explanation: "
+                android:textSize="24sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvExplanationTitle"
+                >
+                <TextView
+                    android:id="@+id/tvExplanation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="explanation"/>
+            </ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
