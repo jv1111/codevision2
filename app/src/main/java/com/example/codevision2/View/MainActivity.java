@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCompile, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                String testCode = "public class Main{public static void main(String[] args){System.out.println(\"Hi\");}}";
+                String testCode = "public class Main{public static voi main(String[] args){System.out.println(\"Hi\");}}";
                 repo.runAndCompile(testCode, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {

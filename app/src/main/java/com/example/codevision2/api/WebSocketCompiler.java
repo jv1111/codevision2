@@ -36,6 +36,7 @@ public class WebSocketCompiler {
             @Override
             public void onMessage(WebSocket webSocket, String text) {
                 activity.runOnUiThread(()->{
+                    Log.i("myTag on message", "got the message");
                     cb.onCodeRunOutput(text);
                 });
             }
