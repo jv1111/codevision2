@@ -1,6 +1,5 @@
 package com.example.codevision2.api.services;
 
-import com.example.codevision2.Constant;
 import com.example.codevision2.ENV;
 import com.example.codevision2.api.model.OCRResponseModel;
 

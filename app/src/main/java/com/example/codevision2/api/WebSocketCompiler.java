@@ -18,7 +18,11 @@ public class WebSocketCompiler {
     public static WebSocket webSocket;
     public static OkHttpClient client = new OkHttpClient();
 
-    public static void connectWebSocket(Activity activity) {
+    public interface ICompiler{
+        void onCodeRunOutput(String output);
+    }
+
+    public static void connectWebSocket(Activity activity, ICompiler cb) {
         Request request = new Request.Builder().url("ws://"+ ENV.COMPILER_API_IP +"/").build();
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
@@ -31,8 +35,9 @@ public class WebSocketCompiler {
 
             @Override
             public void onMessage(WebSocket webSocket, String text) {
-                activity.runOnUiThread(() ->
-                        Log.i("myTag websocket: ", text));
+                activity.runOnUiThread(()->{
+                    cb.onCodeRunOutput(text);
+                });
             }
 
             @Override

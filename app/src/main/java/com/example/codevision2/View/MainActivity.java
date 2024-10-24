@@ -34,7 +34,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WebSocketCompiler.ICompiler {
 
     private ActivityMainBinding binding;
     private StorageReference storageReference;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         anim = new AnimationUI(this);
         cam = new CameraHelper(this);
         repo = new Repository();
-        WebSocketCompiler.connectWebSocket(this);
+        WebSocketCompiler.connectWebSocket(this, this);
 
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
@@ -68,7 +68,18 @@ public class MainActivity extends AppCompatActivity {
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCompile, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
+                String testCode = "public class Main{public static void main(String[] args){System.out.println(\"Hi\");}}";
+                repo.runAndCompile(testCode, new Repository.RepoCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) {
+                        Log.i("myTag compile output: ", "success");
+                    }
 
+                    @Override
+                    public void onFailed(String errorMessage) {
+                        Log.e("myTag compile", errorMessage);
+                    }
+                });
             }
         });
     }
@@ -147,5 +158,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Failed to take a picture", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onCodeRunOutput(String output) {
+        binding.tvOutput.setText(output);
     }
 }
