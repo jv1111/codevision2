@@ -21,6 +21,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.codevision2.Constant;
+import com.example.codevision2.ENV;
 import com.example.codevision2.R;
 import com.example.codevision2.api.Repository;
 import com.example.codevision2.api.WebSocketCompiler;
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
+                binding.btnApplyChanges.setVisibility(View.GONE);
                 repo.analyzeCode(compiledCode, Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         codeExplanation = data;
                         binding.tvExplanation.setText(codeExplanation);
                         infoViewHandler(true);
+                        binding.btnApplyChanges.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -145,6 +148,15 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         Log.e("myTag", errorMessage);
                     }
                 });
+            }
+        });
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnApplyChanges, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                String extractedCode = StringFormatter.getTheCodeFromString(codeExplanation);
+                binding.etCode.setText(extractedCode);
+                infoViewHandler(false);
             }
         });
     }
