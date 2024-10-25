@@ -50,7 +50,6 @@ public class WebSocketCompiler {
                     }catch (Exception ex){
                         Log.e("myTag error: ", ex.getMessage());
                     }
-
                 });
             }
 

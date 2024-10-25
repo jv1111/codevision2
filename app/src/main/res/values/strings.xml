@@ -12,4 +12,11 @@
         \t\t int age = scanner.nextInt();\n
         \t\t System.out.println(\"Hello, \" + name + \"! You are \" + age + \" years old.\");\n
         }}</string>
+    <string name="codeSample2">
+        public class Main {\n
+        \tpublic static void main(String[] args) {\n
+        \t\t
+        \t\t System.out.print(\"Hello");\n
+        }}
+    </string>
 </resources>

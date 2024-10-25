@@ -24,6 +24,7 @@ import com.example.codevision2.Constant;
 import com.example.codevision2.R;
 import com.example.codevision2.api.Repository;
 import com.example.codevision2.api.WebSocketCompiler;
+import com.example.codevision2.api.model.CompilerModel;
 import com.example.codevision2.databinding.ActivityMainBinding;
 import com.example.codevision2.helper.AnimationUI;
 import com.example.codevision2.helper.CameraHelper;
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private AnimationUI anim;
     private static final int ORC_PART_PROGRESS = 10;
     private String outputStr;
+    private String compiledCode;
+    private String codeExplanation;
     private Boolean isInfoActive = false;
 
     @Override
@@ -85,12 +88,12 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 repo.runAndCompile(binding.etCode.getText().toString(), new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
-                        Log.i("myTag compile output: ", "success");
+                        compiledCode = data;
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
-                        Log.e("myTag compile", errorMessage);
+                        Log.e("myTag error: ", errorMessage);
                     }
                 });
             }
@@ -108,7 +111,20 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                infoViewHandler(true);
+                repo.analyzeCode(compiledCode, new Repository.RepoCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) {
+                        codeExplanation = data;
+                        Log.i("myTag explanation", data);
+                        binding.tvExplanation.setText(codeExplanation);
+                        infoViewHandler(true);
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+                        Log.e("myTag analyze error: ", errorMessage);
+                    }
+                });
             }
         });
     }

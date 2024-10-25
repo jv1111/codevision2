@@ -7,4 +7,5 @@ public class CompilerModel {
         this.code = code;
     }
     public String getOutput(){return output;}
+    public String getCode(){return code;}
 }
