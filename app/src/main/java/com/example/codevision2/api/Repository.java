@@ -3,6 +3,7 @@ package com.example.codevision2.api;
 
 import android.util.Log;
 
+import com.example.codevision2.Constant;
 import com.example.codevision2.ENV;
 import com.example.codevision2.api.model.AIMessageModel;
 import com.example.codevision2.api.model.AIModel;
@@ -36,8 +37,13 @@ public class Repository {
     private final RetrofitInstance retrofitInstanceCompiler = new RetrofitInstance(ENV.COMPILER_API_URL);
     private final ServiceCompiler compilerService = retrofitInstanceCompiler.getRetrofit().create(ServiceCompiler.class);
 
-    public void analyzeCode(String code, RepoCallback<String> cb){
-        String script = ENV.AI_VALID_CODE_SCRIPT + code;
+    public void analyzeCode(String code, int mode, RepoCallback<String> cb){
+        String script;
+        if(mode == Constant.AI_EXPLAIN_CODE){
+            script = ENV.AI_VALID_CODE_SCRIPT + code;
+        }else{
+            script = ENV.AI_START_ANALYZING + code + ENV.AI_END_ANALYZING;
+        }
         AIMessageModel message = new AIMessageModel(ENV.AI_USER, script);
         List<AIMessageModel> messages = new ArrayList<>();
         messages.add(message);

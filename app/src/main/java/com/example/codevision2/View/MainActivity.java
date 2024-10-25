@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                repo.analyzeCode(compiledCode, new Repository.RepoCallback<String>() {
+                repo.analyzeCode(compiledCode, Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
                         codeExplanation = data;
@@ -123,6 +123,26 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                     @Override
                     public void onFailed(String errorMessage) {
                         Log.e("myTag analyze error: ", errorMessage);
+                    }
+                });
+            }
+        });
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnAnalyze, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                repo.analyzeCode(binding.etCode.getText().toString(), Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) {
+                        Log.i("myTag", data);
+                        codeExplanation = data;
+                        binding.tvExplanation.setText(codeExplanation);
+                        infoViewHandler(true);
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+                        Log.e("myTag", errorMessage);
                     }
                 });
             }
@@ -181,36 +201,40 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == CameraHelper.REQUEST_CODE_CAPTURE){
             if (resultCode == Activity.RESULT_OK) {
-                File f = new File(cam.currentPhotoPath);
-                storageHelper.addPicToGallery(f);
-                storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
-                    @Override
-                    public void onUploadSuccess(String url) {
-                        setConversionProgress(100, ORC_PART_PROGRESS, "Converting the image to text");
-                        repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
-                            @Override
-                            public void onSuccess(String data) {
-                                setConversionProgress(100,0, "Finished");
-                                binding.etCode.setText(data);
-                            }
-
-                            @Override
-                            public void onFailed(String errorMessage) {
-                                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                                setConversionProgress(100,0, "Finished");
-                            }
-                        });
-                    }
-                    @Override
-                    public void onProgressCallback(int progress) {
-                        setConversionProgress(progress, ORC_PART_PROGRESS, "Preparing the image.");
-                    }
-                });
+                onCaptureHandler();
             }
             else {
                 Toast.makeText(this, "Failed to take a picture", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void onCaptureHandler(){
+        File f = new File(cam.currentPhotoPath);
+        storageHelper.addPicToGallery(f);
+        storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
+            @Override
+            public void onUploadSuccess(String url) {
+                setConversionProgress(100, ORC_PART_PROGRESS, "Converting the image to text");
+                repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) {
+                        setConversionProgress(100,0, "Finished");
+                        binding.etCode.setText(data);
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        setConversionProgress(100,0, "Finished");
+                    }
+                });
+            }
+            @Override
+            public void onProgressCallback(int progress) {
+                setConversionProgress(progress, ORC_PART_PROGRESS, "Preparing the image.");
+            }
+        });
     }
 
     @Override
