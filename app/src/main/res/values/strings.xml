@@ -19,4 +19,5 @@
         \t\t System.out.print(\"Hello");\n
         }}
     </string>
+    <string name="app_title">Code Vision\t</string>
 </resources>
