@@ -44,6 +44,7 @@
 
         <activity
             android:name=".View.MainActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true"/>
 
         <meta-data
