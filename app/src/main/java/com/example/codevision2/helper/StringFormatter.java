@@ -14,4 +14,8 @@ public class StringFormatter {
             return "";
         }
     }
+
+    public static boolean hasValue(String input) {
+        return input != null && !input.trim().isEmpty();
+    }
 }

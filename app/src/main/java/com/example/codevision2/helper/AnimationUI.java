@@ -83,19 +83,19 @@ public class AnimationUI {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void scaleDownRelativeLayoutOnTouchListener(RelativeLayout relativeLayout, Callback cb){
-        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+    public void scaleDownRelativeLayoutOnTouchListener(ViewGroup layout, Callback cb){
+        layout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    relativeLayout.startAnimation(scaleUp);
-                    relativeLayout.setScaleX(1f);
-                    relativeLayout.setScaleY(1f);
+                    layout.startAnimation(scaleUp);
+                    layout.setScaleX(1f);
+                    layout.setScaleY(1f);
                     cb.onRelease();
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    relativeLayout.startAnimation(scaleDown);
-                    relativeLayout.setScaleX(.9f);
-                    relativeLayout.setScaleY(.9f);
+                    layout.startAnimation(scaleDown);
+                    layout.setScaleX(.9f);
+                    layout.setScaleY(.9f);
                 }
                 return true;
             }

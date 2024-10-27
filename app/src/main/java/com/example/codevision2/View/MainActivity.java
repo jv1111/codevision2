@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private String compiledCode;
     private String codeExplanation;
     private Boolean isInfoActive = false;
+    private boolean isAnalyzeEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +67,47 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         repo = new Repository();
         WebSocketCompiler.connectWebSocket(this, this);
         buttonsFunction();
+        analyzeViewHandler();
     }
 
     @Override
     public void onBackPressed() {
         if(isInfoActive) infoViewHandler(false);
         else super.onBackPressed();
+    }
+
+    private void analyzeViewHandler(){
+        if(StringFormatter.hasValue(binding.etCode.getText().toString())) {
+            isAnalyzeEnabled = true;
+            binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_20);
+        }
+        else {
+            binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_disabled_20);
+            isAnalyzeEnabled = false;
+        }
+       binding.etCode.addTextChangedListener(new TextWatcher() {
+           @Override
+           public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+           }
+
+           @Override
+           public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(StringFormatter.hasValue(binding.etCode.getText().toString())) {
+                    isAnalyzeEnabled = true;
+                    binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_20);
+                }
+                else {
+                    binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_disabled_20);
+                    isAnalyzeEnabled = false;
+                }
+           }
+
+           @Override
+           public void afterTextChanged(Editable s) {
+
+           }
+       });
     }
 
     private void buttonsFunction(){
@@ -86,15 +124,19 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 Log.i("myTag code: ", binding.etCode.getText().toString());
                 outputStr = "";
                 binding.tvOutput.setText("Compiling");
+                anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
                 repo.runAndCompile(binding.etCode.getText().toString(), new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
                         compiledCode = data;
+                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
                         Log.e("myTag error: ", errorMessage);
+                        binding.tvOutput.setText(errorMessage);
+                        anim.setLoadingRelativeLayout(false, binding.tvCompile, binding.pbCompile);
                     }
                 });
             }
@@ -133,21 +175,23 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnAnalyze, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                repo.analyzeCode(binding.etCode.getText().toString(), Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
-                    @Override
-                    public void onSuccess(String data) {
-                        Log.i("myTag", data);
-                        codeExplanation = data;
-                        binding.tvExplanation.setText(codeExplanation);
-                        infoViewHandler(true);
-                        binding.btnApplyChanges.setVisibility(View.VISIBLE);
-                    }
+                if(isAnalyzeEnabled){
+                    repo.analyzeCode(binding.etCode.getText().toString(), Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
+                        @Override
+                        public void onSuccess(String data) {
+                            Log.i("myTag", data);
+                            codeExplanation = data;
+                            binding.tvExplanation.setText(codeExplanation);
+                            infoViewHandler(true);
+                            binding.btnApplyChanges.setVisibility(View.VISIBLE);
+                        }
 
-                    @Override
-                    public void onFailed(String errorMessage) {
-                        Log.e("myTag", errorMessage);
-                    }
-                });
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            Log.e("myTag", errorMessage);
+                        }
+                    });
+                }
             }
         });
 
@@ -198,6 +242,8 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             return insets;
         });
     }
+
+    //TODO SET LOADING PROGRESS FOR EVERY BUTTON
 
     private void setConversionProgress(int uploadProgress, int orcPartProgress, String message){
         int orcTotalProgress = uploadProgress - orcPartProgress;
