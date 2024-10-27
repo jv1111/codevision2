@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         WebSocketCompiler.connectWebSocket(this, this);
         buttonsFunction();
         analyzeViewHandler();
+        setInputView(false);
     }
 
     @Override
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_disabled_20);
             isAnalyzeEnabled = false;
         }
+        //TODO GENERATE A LOADING FUNCTION FOR BTN ENTER AND ENABLE AND DISABLE
        binding.etCode.addTextChangedListener(new TextWatcher() {
            @Override
            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -108,6 +110,14 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
            }
        });
+    }
+
+    private void setInputView(boolean isEnabled){
+        if(isEnabled){
+            binding.btnSendInput.setBackgroundResource(R.drawable.round_button_20);
+        }else{
+            binding.btnSendInput.setBackgroundResource(R.drawable.round_button_disabled_20);
+        }
     }
 
     private void buttonsFunction(){
@@ -175,20 +185,23 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnAnalyze, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
+                setLoadingProgress(0, 0, "Analyzing", false);
                 if(isAnalyzeEnabled){
                     repo.analyzeCode(binding.etCode.getText().toString(), Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
                         @Override
                         public void onSuccess(String data) {
                             Log.i("myTag", data);
-                            codeExplanation = data;
+                            codeExplanation = StringFormatter.formatSampleCode(data);
                             binding.tvExplanation.setText(codeExplanation);
                             infoViewHandler(true);
                             binding.btnApplyChanges.setVisibility(View.VISIBLE);
+                            setLoadingProgress(100, 0, "Analyzing", false);
                         }
 
                         @Override
                         public void onFailed(String errorMessage) {
                             Log.e("myTag", errorMessage);
+                            setLoadingProgress(100, 0, "Analyzing", false);
                         }
                     });
                 }
@@ -245,14 +258,15 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
     //TODO SET LOADING PROGRESS FOR EVERY BUTTON
 
-    private void setConversionProgress(int uploadProgress, int orcPartProgress, String message){
+    private void setLoadingProgress(int uploadProgress, int orcPartProgress, String message, boolean isProgressVisible){
         int orcTotalProgress = uploadProgress - orcPartProgress;
         binding.tvLoadingMessage.setText(message);
         String strProgress = "0%";
         if(orcTotalProgress != 100){
             if(binding.layoutLoading.getVisibility() != View.VISIBLE) binding.layoutLoading.setVisibility(View.VISIBLE);
             if(orcTotalProgress > 0) strProgress = orcTotalProgress + "%";
-            binding.tvLoadingPercentage.setText(strProgress);
+            if(isProgressVisible) binding.tvLoadingPercentage.setText(strProgress);
+            else binding.tvLoadingPercentage.setText("");
         }else {
             binding.layoutLoading.setVisibility(View.GONE);
         }
@@ -289,24 +303,24 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
             @Override
             public void onUploadSuccess(String url) {
-                setConversionProgress(100, ORC_PART_PROGRESS, "Converting the image to text");
+                setLoadingProgress(100, ORC_PART_PROGRESS, "Converting the image to text", true);
                 repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
-                        setConversionProgress(100,0, "Finished");
+                        setLoadingProgress(100,0, "Finished", true);
                         binding.etCode.setText(data);
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
                         Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        setConversionProgress(100,0, "Finished");
+                        setLoadingProgress(100,0, "Finished", true);
                     }
                 });
             }
             @Override
             public void onProgressCallback(int progress) {
-                setConversionProgress(progress, ORC_PART_PROGRESS, "Preparing the image.");
+                setLoadingProgress(progress, ORC_PART_PROGRESS, "Preparing the image.", true);
             }
         });
     }
@@ -318,8 +332,10 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         Log.i("myTag output: ", String.valueOf(isEnded));
         if(isEnded){
             btnHelpViewHandler(true);
+            setInputView(false);
         }else{
             btnHelpViewHandler(false);
+            setInputView(true);
         }
     }
 }
