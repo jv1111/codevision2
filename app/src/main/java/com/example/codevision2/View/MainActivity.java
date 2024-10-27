@@ -161,12 +161,28 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         });
     }
 
+    private void btnHelpViewHandler(boolean isShown){
+        if(isShown){
+            anim.setPopup(binding.btnHelp);
+            binding.btnHelp.setVisibility(View.VISIBLE);
+        }else{
+            anim.scale_down(binding.btnHelp, () -> {
+                binding.btnHelp.setVisibility(View.GONE);
+            });
+        }
+    }
+
     private void infoViewHandler(Boolean isShown){
         isInfoActive = isShown;
-        int showInfo;
-        if(isShown) showInfo = View.VISIBLE;
-        else showInfo = View.GONE;
-        binding.layoutInfo.setVisibility(showInfo);
+        if(isShown) {
+            anim.setAppearFromBottom(binding.layoutInfoExplanation);
+            binding.layoutInfo.setVisibility(View.VISIBLE);
+        }else{
+            Log.i("myTag", "hidding");
+            anim.setMoveToBottom(binding.layoutInfoExplanation, () -> {
+                binding.layoutInfo.setVisibility(View.GONE);
+            });
+        }
     }
 
     private void setStatusbar(){
@@ -255,9 +271,9 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         binding.tvOutput.setText(outputStr);
         Log.i("myTag output: ", String.valueOf(isEnded));
         if(isEnded){
-            binding.btnHelp.setVisibility(View.VISIBLE);
+            btnHelpViewHandler(true);
         }else{
-            binding.btnHelp.setVisibility(View.GONE);
+            btnHelpViewHandler(false);
         }
     }
 }
