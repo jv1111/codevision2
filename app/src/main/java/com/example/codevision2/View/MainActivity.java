@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private String codeExplanation;
     private Boolean isInfoActive = false;
     private boolean isAnalyzeEnabled = false;
+    private boolean isScanner = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         }else{
             binding.btnSendInput.setBackgroundResource(R.drawable.round_button_disabled_20);
         }
+        isScanner = isEnabled;
     }
 
     private void buttonsFunction(){
@@ -153,18 +155,21 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         });
 
         binding.btnSendInput.setOnClickListener(v -> {
-            String input = String.valueOf(binding.etInput.getText());
-            binding.etInput.setText("");
-            Log.i("myTag btn: ", input);
-            outputStr = outputStr + input;
-            binding.tvOutput.setText(outputStr);
-            WebSocketCompiler.sendMessage(input);
+            if(isScanner){
+                String input = String.valueOf(binding.etInput.getText());
+                binding.etInput.setText("");
+                Log.i("myTag btn: ", input);
+                outputStr = outputStr + input;
+                binding.tvOutput.setText(outputStr);
+                WebSocketCompiler.sendMessage(input);
+            }
         });
 
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
                 binding.btnApplyChanges.setVisibility(View.GONE);
+                setLoadingProgress(0,0, "Loading", false);
                 repo.analyzeCode(compiledCode, outputStr,Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
@@ -172,11 +177,13 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         Log.i("myTag explanation", data);
                         binding.tvExplanation.setText(codeExplanation);
                         infoViewHandler(true);
+                        setLoadingProgress(100,0, "Analyzing", false);
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
                         Log.e("myTag analyze error: ", errorMessage);
+                        setLoadingProgress(100,0, "Analyzing", false);
                     }
                 });
             }
