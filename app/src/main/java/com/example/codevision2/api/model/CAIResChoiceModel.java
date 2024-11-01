@@ -1,13 +1,12 @@
 package com.example.codevision2.api.model;
 
 public class CAIResChoiceModel {
-    private String message;
+    private AIMessageModel message;
 
-    public CAIResChoiceModel(String message){
+    public CAIResChoiceModel(AIMessageModel message){
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
+    public AIMessageModel getMessage(){ return message; }
+
 }

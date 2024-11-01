@@ -31,7 +31,7 @@ public class Repository {
     }
 
     private final RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(ENV.OCR_API_URL);
-    private final RetrofitInstance retrofitInstanceCAI = new RetrofitInstance(ENV.CAI_API_HOST);
+    private final RetrofitInstance retrofitInstanceCAI = new RetrofitInstance(ENV.CAI_API_URL);
 
     private final ServiceOCR ocrService = retrofitInstanceOCR.getRetrofit().create(ServiceOCR.class);
     private final ServiceAI aiService = retrofitInstanceCAI.getRetrofit().create(ServiceAI.class);
@@ -48,9 +48,6 @@ public class Repository {
             script = ENV.AI_EXPLAIN_CODE + code + ENV.AI_EXPLAIN_OUTPUT + output;
         }
 
-        Log.i("myTag script", script);
-
-        /*
         List<AIMessageModel> messages = new ArrayList<>();
         messages.add(new AIMessageModel(ENV.AI_USER, script));
         CAIReqModel reqModel = new CAIReqModel(messages);
@@ -59,6 +56,7 @@ public class Repository {
         call.enqueue(new Callback<CAIResModel>() {
             @Override
             public void onResponse(Call<CAIResModel> call, Response<CAIResModel> response) {
+                Log.i("myTag response: ", response.body().getFirstMessage());
                 cb.onSuccess(response.body().getFirstMessage());
             }
 
@@ -67,7 +65,7 @@ public class Repository {
                 cb.onFailed(t.getMessage());
             }
         });
-         */
+
     }
 
     public void getTextFromImage(String param, RepoCallback<String> cb){

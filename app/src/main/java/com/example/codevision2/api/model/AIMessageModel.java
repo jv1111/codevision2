@@ -7,4 +7,8 @@ public class AIMessageModel {
         this.role = role;
         this.content = content;
     }
+
+    public String getContent(){
+        return content;
+    }
 }

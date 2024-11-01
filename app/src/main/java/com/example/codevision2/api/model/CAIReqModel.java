@@ -5,13 +5,13 @@ import java.util.List;
 public class CAIReqModel {
     private List<AIMessageModel> messages;
     private String model;
-    private int maxTokens;
+    private int max_tokens;
     private double temperature;
 
     public CAIReqModel(List<AIMessageModel> messages) {
         this.messages = messages;
         this.model = "gpt-4o";
-        this.maxTokens = 100;
+        this.max_tokens = 500;
         this.temperature = 0.9;
     }
 }

@@ -10,7 +10,7 @@ public class CAIResModel {
     }
 
     public String getFirstMessage(){
-        return choices.get(0).getMessage();
+        return choices.get(0).getMessage().getContent();
     }
 
 }
