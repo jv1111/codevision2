@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             @Override
             public void onRelease() {
                 binding.btnApplyChanges.setVisibility(View.GONE);
-                repo.analyzeCode(compiledCode, Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
+                repo.analyzeCode(compiledCode, outputStr,Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
                         codeExplanation = data;
@@ -187,14 +187,14 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             public void onRelease() {
                 setLoadingProgress(0, 0, "Analyzing", false);
                 if(isAnalyzeEnabled){
-                    repo.analyzeCode(binding.etCode.getText().toString(), Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
+                    repo.analyzeCode(binding.etCode.getText().toString(), null, Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
                         @Override
                         public void onSuccess(String data) {
                             Log.i("myTag", data);
                             codeExplanation = StringFormatter.formatSampleCode(data);
                             binding.tvExplanation.setText(codeExplanation);
-                            infoViewHandler(true);
                             binding.btnApplyChanges.setVisibility(View.VISIBLE);
+                            infoViewHandler(true);
                             setLoadingProgress(100, 0, "Analyzing", false);
                         }
 
@@ -211,8 +211,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnApplyChanges, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                String extractedCode = StringFormatter.getTheCodeFromString(codeExplanation);
-                binding.etCode.setText(extractedCode);
+                binding.etCode.setText(codeExplanation);
                 infoViewHandler(false);
             }
         });
@@ -329,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     public void onCodeRunOutput(String output, Boolean isEnded) {
         outputStr = outputStr + "\n" + output;
         binding.tvOutput.setText(outputStr);
-        Log.i("myTag output: ", String.valueOf(isEnded));
+        Log.i("myTag output: ", outputStr);
         if(isEnded){
             btnHelpViewHandler(true);
             setInputView(false);

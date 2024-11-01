@@ -7,6 +7,8 @@ import com.example.codevision2.Constant;
 import com.example.codevision2.ENV;
 import com.example.codevision2.api.model.AIMessageModel;
 import com.example.codevision2.api.model.AIModel;
+import com.example.codevision2.api.model.CAIReqModel;
+import com.example.codevision2.api.model.CAIResModel;
 import com.example.codevision2.api.model.CompilerModel;
 import com.example.codevision2.api.model.OCRResponseModel;
 import com.example.codevision2.api.services.ServiceAI;
@@ -29,41 +31,43 @@ public class Repository {
     }
 
     private final RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(ENV.OCR_API_URL);
-    private final RetrofitInstance retrofitInstanceAI = new RetrofitInstance(ENV.AI_API_URL);
+    private final RetrofitInstance retrofitInstanceCAI = new RetrofitInstance(ENV.CAI_API_HOST);
 
     private final ServiceOCR ocrService = retrofitInstanceOCR.getRetrofit().create(ServiceOCR.class);
-    private final ServiceAI aiService = retrofitInstanceAI.getRetrofit().create(ServiceAI.class);
+    private final ServiceAI aiService = retrofitInstanceCAI.getRetrofit().create(ServiceAI.class);
 
     private final RetrofitInstance retrofitInstanceCompiler = new RetrofitInstance(ENV.COMPILER_API_URL);
     private final ServiceCompiler compilerService = retrofitInstanceCompiler.getRetrofit().create(ServiceCompiler.class);
 
-    public void analyzeCode(String code, int mode, RepoCallback<String> cb){
+    public void analyzeCode(String code, String output, int mode, RepoCallback<String> cb){
         String script;
-        if(mode == Constant.AI_EXPLAIN_CODE){
-            script = ENV.AI_VALID_CODE_SCRIPT + code;
+
+        if(mode == Constant.AI_ANALYZE){
+            script = ENV.AI_START_ANALYZING + code;
         }else{
-            script = ENV.AI_START_ANALYZING + code + ENV.AI_END_ANALYZING;
+            script = ENV.AI_EXPLAIN_CODE + code + ENV.AI_EXPLAIN_OUTPUT + output;
         }
-        AIMessageModel message = new AIMessageModel(ENV.AI_USER, script);
+
+        Log.i("myTag script", script);
+
+        /*
         List<AIMessageModel> messages = new ArrayList<>();
-        messages.add(message);
-        AIModel data = new AIModel(messages, ENV.AI_WEB_ACCESS);
-        Call<AIModel> call = aiService.send(data);
-        call.enqueue(new Callback<AIModel>() {
+        messages.add(new AIMessageModel(ENV.AI_USER, script));
+        CAIReqModel reqModel = new CAIReqModel(messages);
+
+        Call<CAIResModel> call = aiService.cAISend(reqModel);
+        call.enqueue(new Callback<CAIResModel>() {
             @Override
-            public void onResponse(Call<AIModel> call, Response<AIModel> response) {
-                try {
-                    cb.onSuccess(response.body().getResult());
-                }catch (Exception ex){
-                    cb.onFailed(ex.getMessage());
-                }
+            public void onResponse(Call<CAIResModel> call, Response<CAIResModel> response) {
+                cb.onSuccess(response.body().getFirstMessage());
             }
 
             @Override
-            public void onFailure(Call<AIModel> call, Throwable t) {
+            public void onFailure(Call<CAIResModel> call, Throwable t) {
                 cb.onFailed(t.getMessage());
             }
         });
+         */
     }
 
     public void getTextFromImage(String param, RepoCallback<String> cb){
