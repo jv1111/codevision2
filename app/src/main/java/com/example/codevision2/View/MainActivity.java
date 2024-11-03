@@ -168,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                binding.btnApplyChanges.setVisibility(View.GONE);
                 setLoadingProgress(0,0, "Loading", false);
                 repo.analyzeCode(compiledCode, outputStr,Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
                     @Override
@@ -176,14 +175,18 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         codeExplanation = data;
                         Log.i("myTag explanation", data);
                         binding.tvExplanation.setText(codeExplanation);
+                        binding.tvExplanationTitle.setText(R.string.explanation_title);
+                        binding.btnApplyChanges.setVisibility(View.GONE);
+                        Log.i("myTag btnApply: ", "set to gone");
                         infoViewHandler(true);
-                        setLoadingProgress(100,0, "Analyzing", false);
+                        setLoadingProgress(100,0, "Loading", false);
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
                         Log.e("myTag analyze error: ", errorMessage);
-                        setLoadingProgress(100,0, "Analyzing", false);
+                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        setLoadingProgress(100,0, "Loading", false);
                     }
                 });
             }
@@ -192,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnAnalyze, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                setLoadingProgress(0, 0, "Analyzing", false);
+                setLoadingProgress(0, 0, "Loading", false);
                 if(isAnalyzeEnabled){
                     repo.analyzeCode(binding.etCode.getText().toString(), null, Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
                         @Override
@@ -200,15 +203,18 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                             Log.i("myTag", data);
                             codeExplanation = StringFormatter.formatSampleCode(data);
                             binding.tvExplanation.setText(codeExplanation);
+                            binding.tvExplanationTitle.setText(R.string.explanation_suggestions);
                             binding.btnApplyChanges.setVisibility(View.VISIBLE);
+                            Log.i("myTag btnApply: ", "set to visible");
                             infoViewHandler(true);
-                            setLoadingProgress(100, 0, "Analyzing", false);
+                            setLoadingProgress(100, 0, "Loading", false);
                         }
 
                         @Override
                         public void onFailed(String errorMessage) {
                             Log.e("myTag", errorMessage);
-                            setLoadingProgress(100, 0, "Analyzing", false);
+                            Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                            setLoadingProgress(100, 0, "Loading", false);
                         }
                     });
                 }
@@ -261,8 +267,6 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             return insets;
         });
     }
-
-    //TODO SET LOADING PROGRESS FOR EVERY BUTTON
 
     private void setLoadingProgress(int uploadProgress, int orcPartProgress, String message, boolean isProgressVisible){
         int orcTotalProgress = uploadProgress - orcPartProgress;

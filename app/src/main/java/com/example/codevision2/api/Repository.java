@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.codevision2.Constant;
 import com.example.codevision2.ENV;
+import com.example.codevision2.R;
 import com.example.codevision2.api.model.AIMessageModel;
 import com.example.codevision2.api.model.AIModel;
 import com.example.codevision2.api.model.CAIReqModel;
@@ -65,7 +66,6 @@ public class Repository {
                 cb.onFailed(t.getMessage());
             }
         });
-
     }
 
     public void getTextFromImage(String param, RepoCallback<String> cb){

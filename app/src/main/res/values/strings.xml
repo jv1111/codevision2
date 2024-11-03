@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">CodeVision2</string>
+    <string name="explanation_title">Explanation</string>
+    <string name="explanation_suggestions">Suggestions</string>
     <string name="codeSample">
         import java.util.Scanner;\n
 
-        public class Main {\n
+        public class Main E\n
         \tpublic static void main(String[] args) {\n
         \t\t Scanner scanner = new Scanner(System.in);\n
         \t\t System.out.print(\"Enter your name: \");\n
