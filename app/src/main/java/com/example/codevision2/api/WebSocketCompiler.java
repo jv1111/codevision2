@@ -19,12 +19,21 @@ public class WebSocketCompiler {
 
     public static WebSocket webSocket;
     public static OkHttpClient client = new OkHttpClient();
+    private ICompiler cb;
+    private Activity activity;
+
+
+    public WebSocketCompiler(ICompiler cb, Activity activity){
+        this.cb = cb;
+        this.activity = activity;
+    }
 
     public interface ICompiler{
         void onCodeRunOutput(String output, Boolean isEnded);
+        void onConnectionFailed(Throwable t);
     }
 
-    public static void connectWebSocket(Activity activity, ICompiler cb) {
+    public void connectWebSocket() {
         Request request = new Request.Builder().url("ws://"+ ENV.COMPILER_API_IP +"/").build();
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
@@ -61,13 +70,14 @@ public class WebSocketCompiler {
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                activity.runOnUiThread(() ->
-                        Toast.makeText(activity, "WebSocket Error: " + t.getMessage(), Toast.LENGTH_SHORT).show());
+                activity.runOnUiThread(() ->{
+                    cb.onConnectionFailed(t);
+                });
             }
         });
     }
 
-    public static void sendMessage(String message){
+    public void sendMessage(String message){
         if (webSocket != null) {
             webSocket.send(message);
         } else {

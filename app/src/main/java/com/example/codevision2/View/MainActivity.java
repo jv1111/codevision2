@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private CameraHelper cam;
     private Repository repo;
     private AnimationUI anim;
+    private WebSocketCompiler webSocketCompiler;
     private static final int ORC_PART_PROGRESS = 10;
     private String outputStr;
     private String compiledCode;
@@ -66,7 +67,8 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim = new AnimationUI(this);
         cam = new CameraHelper(this);
         repo = new Repository();
-        WebSocketCompiler.connectWebSocket(this, this);
+        webSocketCompiler = new WebSocketCompiler(this, this);
+        webSocketCompiler.connectWebSocket();
         buttonsFunction();
         analyzeViewHandler();
         setInputView(false);
@@ -161,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 Log.i("myTag btn: ", input);
                 outputStr = outputStr + input;
                 binding.tvOutput.setText(outputStr);
-                WebSocketCompiler.sendMessage(input);
+                webSocketCompiler.sendMessage(input);
             }
         });
 
@@ -347,5 +349,11 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             btnHelpViewHandler(false);
             setInputView(true);
         }
+    }
+
+    @Override
+    public void onConnectionFailed(Throwable t) {
+        webSocketCompiler.connectWebSocket();
+        Toast.makeText(this, "WebSocket Error: " + t.getMessage() + "reconnecting", Toast.LENGTH_SHORT).show();
     }
 }
