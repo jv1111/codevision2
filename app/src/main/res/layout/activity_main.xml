@@ -326,4 +326,77 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/layoutCropPrompt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black_30"
+        android:focusable="true"
+        android:clickable="true"
+        android:padding="10dp"
+        android:visibility="gone">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutBgCropPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_shape_20_white"
+            android:layout_centerInParent="true"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvCropQuestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/agbalumo"
+                android:text="Do you want to crop the image?"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/tvCropQuestion"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <RelativeLayout
+                    android:id="@+id/btnCropYes"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/round_button_20"
+                    >
+                    <TextView
+                        android:id="@+id/tvCropYes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="Yes"
+                        />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/btnCropNo"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/round_button_20"
+                    >
+                    <TextView
+                        android:id="@+id/tvCropNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="No"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

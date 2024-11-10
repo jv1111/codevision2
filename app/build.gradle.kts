@@ -40,6 +40,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+    implementation("com.github.yalantis:ucrop:2.2.8");
+    implementation("com.karumi:dexter:6.2.3")
 
     implementation(libs.appcompat)
     implementation(libs.material)

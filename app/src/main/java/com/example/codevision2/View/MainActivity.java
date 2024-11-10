@@ -35,6 +35,7 @@ import com.example.codevision2.helper.StorageHelper;
 import com.example.codevision2.helper.StringFormatter;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 
@@ -125,6 +126,23 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     }
 
     private void buttonsFunction(){
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCropYes, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                binding.layoutCropPrompt.setVisibility(View.GONE);
+                UCropperActivity.startUCrop(cam.imageUri, MainActivity.this);
+            }
+        });
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCropNo, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                binding.layoutCropPrompt.setVisibility(View.GONE);
+                uploadTheCapturedImage(cam.imageUri);
+            }
+        });
+
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
@@ -307,15 +325,29 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 Toast.makeText(this, "Failed to take a picture", Toast.LENGTH_SHORT).show();
             }
         }
+        if(requestCode == Constant.UCROP_REQUEST_CODE){
+            Log.i("myTag", "imaged_cropped");
+            Uri resultUri = UCrop.getOutput(data);
+            uploadTheCapturedImage(resultUri);
+        }
+    }
+
+    private void askToCrop(){
+        binding.layoutCropPrompt.setVisibility(View.VISIBLE);
     }
 
     private void onCaptureHandler(){
-        File f = new File(cam.currentPhotoPath);
-        storageHelper.addPicToGallery(f);
-        storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
+        storageHelper.addPicToGallery(cam.imageFile);
+        //UCropperActivity.startUCrop(imageUri, this);
+        askToCrop();
+    }
+
+    private void uploadTheCapturedImage(Uri uri){
+        storageHelper.uploadImageToFirebase(cam.imageFile.getName(), uri, new StorageHelper.Callback() {
             @Override
             public void onUploadSuccess(String url) {
                 setLoadingProgress(100, ORC_PART_PROGRESS, "Converting the image to text", true);
+                /*
                 repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
@@ -329,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         setLoadingProgress(100,0, "Finished", true);
                     }
                 });
+                 */
             }
             @Override
             public void onProgressCallback(int progress) {
