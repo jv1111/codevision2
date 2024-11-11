@@ -342,8 +342,23 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
     private void onCaptureHandler(){
         storageHelper.addPicToGallery(cam.imageFile);
-        //UCropperActivity.startUCrop(imageUri, this);
         askToCrop();
+    }
+
+    private void convertImageToText(String imageUri){
+        repo.getTextFromImage(imageUri, new Repository.RepoCallback<String>() {
+            @Override
+            public void onSuccess(String data) {
+                setLoadingProgress(100,0, "Finished", true);
+                binding.etCode.setText(data);
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                setLoadingProgress(100,0, "Finished", true);
+            }
+        });
     }
 
     private void uploadTheCapturedImage(Uri uri){
@@ -351,21 +366,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             @Override
             public void onUploadSuccess(String url) {
                 setLoadingProgress(100, ORC_PART_PROGRESS, "Converting the image to text", true);
-                /*
-                repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
-                    @Override
-                    public void onSuccess(String data) {
-                        setLoadingProgress(100,0, "Finished", true);
-                        binding.etCode.setText(data);
-                    }
-
-                    @Override
-                    public void onFailed(String errorMessage) {
-                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        setLoadingProgress(100,0, "Finished", true);
-                    }
-                });
-                 */
+                convertImageToText(url);
             }
             @Override
             public void onProgressCallback(int progress) {
