@@ -327,8 +327,12 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         }
         if(requestCode == Constant.UCROP_REQUEST_CODE){
             Log.i("myTag", "imaged_cropped");
-            Uri resultUri = UCrop.getOutput(data);
-            uploadTheCapturedImage(resultUri);
+            try {
+                Uri resultUri = UCrop.getOutput(data);
+                uploadTheCapturedImage(resultUri);
+            }catch (Exception ex){
+                Toast.makeText(MainActivity.this, "Canceled " + ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
         }
     }
 

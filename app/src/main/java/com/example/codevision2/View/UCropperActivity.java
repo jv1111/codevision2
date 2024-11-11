@@ -42,9 +42,11 @@ public class UCropperActivity extends AppCompatActivity {
 
         destinationUri = new StringBuilder(UUID.randomUUID().toString()).append(".jpg").toString();
         UCrop.Options options = new UCrop.Options();
+        options.setFreeStyleCropEnabled(true);
+
         UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationUri)))
                 .withOptions(options)
-                //.withAspectRatio(16, 9)
+                .withAspectRatio(1, 1) // Set a default aspect ratio (e.g., square 1:1)
                 .withMaxResultSize(2000, 2000)
                 .start(UCropperActivity.this);
 
@@ -68,7 +70,11 @@ public class UCropperActivity extends AppCompatActivity {
 
     public static void startUCrop(Uri uri, Activity activity) {
         // Start uCrop Activity
+        UCrop.Options options = new UCrop.Options();
+        options.setFreeStyleCropEnabled(true);
+
         UCrop.of(uri, Uri.fromFile(new File(activity.getCacheDir(), "cropped_image.jpg")))
+                .withOptions(options)
                 .withAspectRatio(1, 1)  // Aspect ratio 1:1 (Square crop)
                 .withMaxResultSize(500, 500)  // Max crop size (500x500)
                 .start(activity, Constant.UCROP_REQUEST_CODE);
