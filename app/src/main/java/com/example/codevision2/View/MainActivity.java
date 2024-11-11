@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
     @Override
     public void onBackPressed() {
-        if(isInfoActive) infoViewHandler(false);
+        if(isInfoActive) binding.layoutInfo.post(()->{ infoViewHandler(false, View.GONE); });
         else super.onBackPressed();
     }
 
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 webSocketCompiler.sendMessage(input);
             }
         });
-
+        //TODO FIX BUGS FOR VISIBILITY OF THE btnHelp still visible after pressing back but not clickable, apply is still visibly on help pressed
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
@@ -196,9 +196,9 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         Log.i("myTag explanation", data);
                         binding.tvExplanation.setText(codeExplanation);
                         binding.tvExplanationTitle.setText(R.string.explanation_title);
-                        binding.btnApplyChanges.setVisibility(View.GONE);
-                        Log.i("myTag btnApply: ", "set to gone");
-                        infoViewHandler(true);
+                        binding.layoutInfo.post(() -> {
+                            infoViewHandler(true, View.GONE);
+                        });
                         setLoadingProgress(100,0, "Loading", false);
                     }
 
@@ -224,9 +224,10 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                             codeExplanation = StringFormatter.formatSampleCode(data);
                             binding.tvExplanation.setText(codeExplanation);
                             binding.tvExplanationTitle.setText(R.string.explanation_suggestions);
-                            binding.btnApplyChanges.setVisibility(View.VISIBLE);
                             Log.i("myTag btnApply: ", "set to visible");
-                            infoViewHandler(true);
+                            binding.layoutInfo.post(()->{
+                                infoViewHandler(true, View.VISIBLE);
+                            });
                             setLoadingProgress(100, 0, "Loading", false);
                         }
 
@@ -245,7 +246,9 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             @Override
             public void onRelease() {
                 binding.etCode.setText(codeExplanation);
-                infoViewHandler(false);
+                binding.layoutInfo.post(()->{
+                    infoViewHandler(false, View.GONE);
+                });
             }
         });
     }
@@ -255,13 +258,15 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             anim.setPopup(binding.btnHelp);
             binding.btnHelp.setVisibility(View.VISIBLE);
         }else{
+            Log.i("myTag", "hidding help");
+            binding.btnHelp.setVisibility(View.GONE);
             anim.scale_down(binding.btnHelp, () -> {
                 binding.btnHelp.setVisibility(View.GONE);
             });
         }
     }
 
-    private void infoViewHandler(Boolean isShown){
+    private void infoViewHandler(Boolean isShown, int applyVisibility){
         isInfoActive = isShown;
         if(isShown) {
             anim.setAppearFromBottom(binding.layoutInfoExplanation);
@@ -272,6 +277,8 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 binding.layoutInfo.setVisibility(View.GONE);
             });
         }
+        Log.i("myTag visibility: ", String.valueOf(applyVisibility));
+        binding.btnApplyChanges.setVisibility(applyVisibility);
     }
 
     private void setStatusbar(){
