@@ -35,6 +35,7 @@ import com.example.codevision2.helper.StorageHelper;
 import com.example.codevision2.helper.StringFormatter;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 
@@ -72,12 +73,24 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         buttonsFunction();
         analyzeViewHandler();
         setInputView(false);
+        //test();
     }
 
     @Override
     public void onBackPressed() {
-        if(isInfoActive) infoViewHandler(false);
+        if(isInfoActive) binding.layoutInfo.post(()->{ infoViewHandler(false, View.GONE); });
         else super.onBackPressed();
+    }
+
+    private void test(){
+        binding.layoutInfo.post(()->{
+            //TODO MAKE THIS WORK NOW, MODIFY THE AI TO ALWAYS HAVE AN EXPLANATION BELOW FOR VERSION TWO, KEEP THE ORIGINAL PROMPT TO PREVENT ERRORS
+            String testInput = "```java\n hi \n```";
+            String testInput2 = Constant.SAMPLE_ANALYZE_RESPONSE;
+            codeExplanation = Constant.SAMPLE_ANALYZE_RESPONSE;
+            binding.tvExplanation.setText(StringFormatter.formatSampleCode(testInput2));
+            infoViewHandler(true, View.VISIBLE);
+        });
     }
 
     private void analyzeViewHandler(){
@@ -125,6 +138,23 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     }
 
     private void buttonsFunction(){
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCropYes, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                binding.layoutCropPrompt.setVisibility(View.GONE);
+                UCropperActivity.startUCrop(cam.imageUri, MainActivity.this);
+            }
+        });
+
+        anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCropNo, new AnimationUI.Callback() {
+            @Override
+            public void onRelease() {
+                binding.layoutCropPrompt.setVisibility(View.GONE);
+                uploadTheCapturedImage(cam.imageUri);
+            }
+        });
+
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnCapture, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
@@ -166,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 webSocketCompiler.sendMessage(input);
             }
         });
-
+        //TODO FIX BUGS FOR VISIBILITY OF THE btnHelp still visible after pressing back but not clickable, apply is still visibly on help pressed
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
@@ -178,9 +208,9 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         Log.i("myTag explanation", data);
                         binding.tvExplanation.setText(codeExplanation);
                         binding.tvExplanationTitle.setText(R.string.explanation_title);
-                        binding.btnApplyChanges.setVisibility(View.GONE);
-                        Log.i("myTag btnApply: ", "set to gone");
-                        infoViewHandler(true);
+                        binding.layoutInfo.post(() -> {
+                            infoViewHandler(true, View.GONE);
+                        });
                         setLoadingProgress(100,0, "Loading", false);
                     }
 
@@ -203,12 +233,13 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         @Override
                         public void onSuccess(String data) {
                             Log.i("myTag", data);
-                            codeExplanation = StringFormatter.formatSampleCode(data);
-                            binding.tvExplanation.setText(codeExplanation);
+                            codeExplanation = data;
+                            binding.tvExplanation.setText(StringFormatter.formatSampleCode(data));
                             binding.tvExplanationTitle.setText(R.string.explanation_suggestions);
-                            binding.btnApplyChanges.setVisibility(View.VISIBLE);
                             Log.i("myTag btnApply: ", "set to visible");
-                            infoViewHandler(true);
+                            binding.layoutInfo.post(()->{
+                                infoViewHandler(true, View.VISIBLE);
+                            });
                             setLoadingProgress(100, 0, "Loading", false);
                         }
 
@@ -226,8 +257,10 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnApplyChanges, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                binding.etCode.setText(codeExplanation);
-                infoViewHandler(false);
+                binding.etCode.setText(StringFormatter.extractCodeExtended(codeExplanation));
+                binding.layoutInfo.post(()->{
+                    infoViewHandler(false, View.GONE);
+                });
             }
         });
     }
@@ -237,13 +270,15 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             anim.setPopup(binding.btnHelp);
             binding.btnHelp.setVisibility(View.VISIBLE);
         }else{
+            Log.i("myTag", "hidding help");
+            binding.btnHelp.setVisibility(View.GONE);
             anim.scale_down(binding.btnHelp, () -> {
                 binding.btnHelp.setVisibility(View.GONE);
             });
         }
     }
 
-    private void infoViewHandler(Boolean isShown){
+    private void infoViewHandler(Boolean isShown, int applyVisibility){
         isInfoActive = isShown;
         if(isShown) {
             anim.setAppearFromBottom(binding.layoutInfoExplanation);
@@ -254,6 +289,8 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 binding.layoutInfo.setVisibility(View.GONE);
             });
         }
+        Log.i("myTag visibility: ", String.valueOf(applyVisibility));
+        binding.btnApplyChanges.setVisibility(applyVisibility);
     }
 
     private void setStatusbar(){
@@ -307,28 +344,48 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 Toast.makeText(this, "Failed to take a picture", Toast.LENGTH_SHORT).show();
             }
         }
+        if(requestCode == Constant.UCROP_REQUEST_CODE){
+            Log.i("myTag", "imaged_cropped");
+            try {
+                Uri resultUri = UCrop.getOutput(data);
+                uploadTheCapturedImage(resultUri);
+            }catch (Exception ex){
+                Toast.makeText(MainActivity.this, "Canceled " + ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void askToCrop(){
+        binding.layoutCropPrompt.setVisibility(View.VISIBLE);
     }
 
     private void onCaptureHandler(){
-        File f = new File(cam.currentPhotoPath);
-        storageHelper.addPicToGallery(f);
-        storageHelper.uploadImageToFirebase(f.getName(), Uri.fromFile(f), new StorageHelper.Callback() {
+        storageHelper.addPicToGallery(cam.imageFile);
+        askToCrop();
+    }
+
+    private void convertImageToText(String imageUri){
+        repo.getTextFromImage(imageUri, new Repository.RepoCallback<String>() {
+            @Override
+            public void onSuccess(String data) {
+                setLoadingProgress(100,0, "Finished", true);
+                binding.etCode.setText(data);
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                setLoadingProgress(100,0, "Finished", true);
+            }
+        });
+    }
+
+    private void uploadTheCapturedImage(Uri uri){
+        storageHelper.uploadImageToFirebase(cam.imageFile.getName(), uri, new StorageHelper.Callback() {
             @Override
             public void onUploadSuccess(String url) {
                 setLoadingProgress(100, ORC_PART_PROGRESS, "Converting the image to text", true);
-                repo.getTextFromImage(url, new Repository.RepoCallback<String>() {
-                    @Override
-                    public void onSuccess(String data) {
-                        setLoadingProgress(100,0, "Finished", true);
-                        binding.etCode.setText(data);
-                    }
-
-                    @Override
-                    public void onFailed(String errorMessage) {
-                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        setLoadingProgress(100,0, "Finished", true);
-                    }
-                });
+                convertImageToText(url);
             }
             @Override
             public void onProgressCallback(int progress) {
@@ -354,6 +411,9 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     @Override
     public void onConnectionFailed(Throwable t) {
         webSocketCompiler.connectWebSocket();
-        Toast.makeText(this, "WebSocket Error: " + t.getMessage() + "reconnecting", Toast.LENGTH_SHORT).show();
+        binding.tvOutput.post(()->{
+           binding.tvOutput.setText("WebSocket Error: " + t.getMessage() + "reconnecting...");
+        });
+        //Toast.makeText(this, "WebSocket Error: " + t.getMessage() + "reconnecting", Toast.LENGTH_SHORT).show();
     }
 }

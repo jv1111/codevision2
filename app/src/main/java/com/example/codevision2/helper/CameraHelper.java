@@ -25,6 +25,8 @@ public class CameraHelper {
     public static final int REQUEST_CODE_CAPTURE = 101;
     public static final int REQUEST_PERMISSION_CAMERA = 102;
     public static String currentPhotoPath;
+    public Uri imageUri;
+    public File imageFile;
 
     public CameraHelper(Activity activity){
         this.activity = activity;
@@ -65,13 +67,15 @@ public class CameraHelper {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+        imageFile = File.createTempFile(
                 imageFileName,
                 ".jpg",
                 storageDir
         );
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
+        currentPhotoPath = imageFile.getAbsolutePath();
+        imageUri = Uri.fromFile(imageFile);
+
+        return imageFile;
     }
 
 }

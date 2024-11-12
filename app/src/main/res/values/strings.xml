@@ -5,7 +5,7 @@
     <string name="codeSample">
         import java.util.Scanner;\n
 
-        public class Main E\n
+        public class Main {\n
         \tpublic static void main(String[] args) {\n
         \t\t Scanner scanner = new Scanner(System.in);\n
         \t\t System.out.print(\"Enter your name: \");\n
