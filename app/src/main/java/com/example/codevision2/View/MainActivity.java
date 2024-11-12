@@ -73,12 +73,24 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         buttonsFunction();
         analyzeViewHandler();
         setInputView(false);
+        //test();
     }
 
     @Override
     public void onBackPressed() {
         if(isInfoActive) binding.layoutInfo.post(()->{ infoViewHandler(false, View.GONE); });
         else super.onBackPressed();
+    }
+
+    private void test(){
+        binding.layoutInfo.post(()->{
+            //TODO MAKE THIS WORK NOW, MODIFY THE AI TO ALWAYS HAVE AN EXPLANATION BELOW FOR VERSION TWO, KEEP THE ORIGINAL PROMPT TO PREVENT ERRORS
+            String testInput = "```java\n hi \n```";
+            String testInput2 = Constant.SAMPLE_ANALYZE_RESPONSE;
+            codeExplanation = Constant.SAMPLE_ANALYZE_RESPONSE;
+            binding.tvExplanation.setText(StringFormatter.formatSampleCode(testInput2));
+            infoViewHandler(true, View.VISIBLE);
+        });
     }
 
     private void analyzeViewHandler(){
@@ -221,8 +233,8 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         @Override
                         public void onSuccess(String data) {
                             Log.i("myTag", data);
-                            codeExplanation = StringFormatter.formatSampleCode(data);
-                            binding.tvExplanation.setText(codeExplanation);
+                            codeExplanation = data;
+                            binding.tvExplanation.setText(StringFormatter.formatSampleCode(data));
                             binding.tvExplanationTitle.setText(R.string.explanation_suggestions);
                             Log.i("myTag btnApply: ", "set to visible");
                             binding.layoutInfo.post(()->{
@@ -245,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnApplyChanges, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                binding.etCode.setText(codeExplanation);
+                binding.etCode.setText(StringFormatter.extractCodeExtended(codeExplanation));
                 binding.layoutInfo.post(()->{
                     infoViewHandler(false, View.GONE);
                 });
@@ -399,6 +411,9 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     @Override
     public void onConnectionFailed(Throwable t) {
         webSocketCompiler.connectWebSocket();
-        Toast.makeText(this, "WebSocket Error: " + t.getMessage() + "reconnecting", Toast.LENGTH_SHORT).show();
+        binding.tvOutput.post(()->{
+           binding.tvOutput.setText("WebSocket Error: " + t.getMessage() + "reconnecting...");
+        });
+        //Toast.makeText(this, "WebSocket Error: " + t.getMessage() + "reconnecting", Toast.LENGTH_SHORT).show();
     }
 }
