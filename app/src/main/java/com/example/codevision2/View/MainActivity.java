@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private String compiledCode;
     private String codeExplanation;
     private Boolean isInfoActive = false;
+    private Boolean isSuggestionActive = false;
     private boolean isAnalyzeEnabled = false;
     private boolean isScanner = false;
 
@@ -78,19 +79,32 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
     @Override
     public void onBackPressed() {
-        if(isInfoActive) binding.layoutInfo.post(()->{ infoViewHandler(false, View.GONE); });
+        if(isInfoActive) binding.layoutInfo.post(()->{ infoViewHandler(false); });
+        else if(isSuggestionActive) binding.layoutAnalyze.post(()->{ suggestionsViewHandler(false); });
         else super.onBackPressed();
     }
 
     private void test(){
         binding.layoutInfo.post(()->{
-            //TODO MAKE THIS WORK NOW, MODIFY THE AI TO ALWAYS HAVE AN EXPLANATION BELOW FOR VERSION TWO, KEEP THE ORIGINAL PROMPT TO PREVENT ERRORS
             String testInput = "```java\n hi \n```";
             String testInput2 = Constant.SAMPLE_ANALYZE_RESPONSE;
             codeExplanation = Constant.SAMPLE_ANALYZE_RESPONSE;
             binding.tvExplanation.setText(StringFormatter.formatSampleCode(testInput2));
-            infoViewHandler(true, View.VISIBLE);
+            infoViewHandler(true);
         });
+    }
+
+    private void suggestionsViewHandler(Boolean isShown){
+        isSuggestionActive = isShown;
+        if(isShown) {
+            anim.setAppearFromBottom(binding.layoutAnalyzeExplanation);
+            binding.layoutAnalyze.setVisibility(View.VISIBLE);
+        }else{
+            Log.i("myTag", "hidding");
+            anim.setMoveToBottom(binding.layoutAnalyzeExplanation, () -> {
+                binding.layoutAnalyze.setVisibility(View.GONE);
+            });
+        }
     }
 
     private void analyzeViewHandler(){
@@ -196,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 webSocketCompiler.sendMessage(input);
             }
         });
-        //TODO FIX BUGS FOR VISIBILITY OF THE btnHelp still visible after pressing back but not clickable, apply is still visibly on help pressed
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
@@ -209,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                         binding.tvExplanation.setText(codeExplanation);
                         binding.tvExplanationTitle.setText(R.string.explanation_title);
                         binding.layoutInfo.post(() -> {
-                            infoViewHandler(true, View.GONE);
+                            infoViewHandler(true);
                         });
                         setLoadingProgress(100,0, "Loading", false);
                     }
@@ -232,13 +245,10 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                     repo.analyzeCode(binding.etCode.getText().toString(), null, Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
                         @Override
                         public void onSuccess(String data) {
-                            Log.i("myTag", data);
                             codeExplanation = data;
-                            binding.tvExplanation.setText(StringFormatter.formatSampleCode(data));
-                            binding.tvExplanationTitle.setText(R.string.explanation_suggestions);
-                            Log.i("myTag btnApply: ", "set to visible");
-                            binding.layoutInfo.post(()->{
-                                infoViewHandler(true, View.VISIBLE);
+                            binding.tvAnalyzeExplanation.setText(StringFormatter.formatSampleCode(data));
+                            binding.layoutAnalyze.post(()->{
+                                suggestionsViewHandler(true);
                             });
                             setLoadingProgress(100, 0, "Loading", false);
                         }
@@ -257,10 +267,15 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnApplyChanges, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                binding.etCode.setText(StringFormatter.extractCodeExtended(codeExplanation));
-                binding.layoutInfo.post(()->{
-                    infoViewHandler(false, View.GONE);
-                });
+                try{
+                    binding.etCode.setText(StringFormatter.extractCodeExtended(codeExplanation));
+                }catch (Exception ex){
+                    Toast.makeText(MainActivity.this, "something went wrong try again.", Toast.LENGTH_LONG).show();
+                } finally {
+                    binding.layoutInfo.post(()->{
+                        suggestionsViewHandler(false);
+                    });
+                }
             }
         });
     }
@@ -278,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         }
     }
 
-    private void infoViewHandler(Boolean isShown, int applyVisibility){
+    private void infoViewHandler(Boolean isShown){
         isInfoActive = isShown;
         if(isShown) {
             anim.setAppearFromBottom(binding.layoutInfoExplanation);
@@ -289,8 +304,6 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 binding.layoutInfo.setVisibility(View.GONE);
             });
         }
-        Log.i("myTag visibility: ", String.valueOf(applyVisibility));
-        binding.btnApplyChanges.setVisibility(applyVisibility);
     }
 
     private void setStatusbar(){

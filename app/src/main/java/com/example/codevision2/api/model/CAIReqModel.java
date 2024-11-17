@@ -11,7 +11,7 @@ public class CAIReqModel {
     public CAIReqModel(List<AIMessageModel> messages) {
         this.messages = messages;
         this.model = "gpt-4o";
-        this.max_tokens = 500;
+        this.max_tokens = 1000;
         this.temperature = 0.9;
     }
 }
