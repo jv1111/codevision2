@@ -57,8 +57,12 @@ public class Repository {
         call.enqueue(new Callback<CAIResModel>() {
             @Override
             public void onResponse(Call<CAIResModel> call, Response<CAIResModel> response) {
-                Log.i("myTag response: ", response.body().getFirstMessage());
-                cb.onSuccess(response.body().getFirstMessage());
+                if(response.body() != null){
+                    Log.i("myTag response: ", response.body().getFirstMessage());
+                    cb.onSuccess(response.body().getFirstMessage());
+                }else{
+                    cb.onFailed("You might have exceeded the MONTHLY quota for Requests on your current plan.");
+                }
             }
 
             @Override
