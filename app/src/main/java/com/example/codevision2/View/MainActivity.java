@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 repo.analyzeCode(compiledCode, outputStr,Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
                     @Override
                     public void onSuccess(String data) {
-                        codeExplanation = data;
+                        codeExplanation = StringFormatter.formatSampleCode(data);
                         Log.i("myTag explanation", data);
                         binding.tvExplanation.setText(codeExplanation);
                         binding.tvExplanationTitle.setText(R.string.explanation_title);
