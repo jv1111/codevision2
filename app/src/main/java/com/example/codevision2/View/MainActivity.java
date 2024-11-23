@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
     private Boolean isSuggestionActive = false;
     private boolean isAnalyzeEnabled = false;
     private boolean isScanner = false;
+    private boolean isBtnHelpEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         webSocketCompiler.connectWebSocket();
         buttonsFunction();
         analyzeViewHandler();
+        setupInputListeners();
         setInputView(false);
         //test();
     }
@@ -116,15 +118,17 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
             binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_disabled_20);
             isAnalyzeEnabled = false;
         }
-        //TODO GENERATE A LOADING FUNCTION FOR BTN ENTER AND ENABLE AND DISABLE
-       binding.etCode.addTextChangedListener(new TextWatcher() {
-           @Override
-           public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
 
-           }
+    private void setupInputListeners(){
+        binding.etCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-           @Override
-           public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(StringFormatter.hasValue(binding.etCode.getText().toString())) {
                     isAnalyzeEnabled = true;
                     binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_20);
@@ -133,13 +137,13 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                     binding.btnAnalyze.setBackgroundResource(R.drawable.round_button_disabled_20);
                     isAnalyzeEnabled = false;
                 }
-           }
+            }
 
-           @Override
-           public void afterTextChanged(Editable s) {
+            @Override
+            public void afterTextChanged(Editable s) {
 
-           }
-       });
+            }
+        });
     }
 
     private void setInputView(boolean isEnabled){
@@ -182,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
                 Log.i("myTag code: ", binding.etCode.getText().toString());
                 outputStr = "";
                 binding.tvOutput.setText("Compiling");
+                btnHelpViewHandler(false);
                 anim.setLoadingRelativeLayout(true, binding.tvCompile, binding.pbCompile);
                 repo.runAndCompile(binding.etCode.getText().toString(), new Repository.RepoCallback<String>() {
                     @Override
@@ -213,27 +218,29 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnHelp, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                setLoadingProgress(0,0, "Loading", false);
-                repo.analyzeCode(compiledCode, outputStr,Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
-                    @Override
-                    public void onSuccess(String data) {
-                        codeExplanation = StringFormatter.formatSampleCode(data);
-                        Log.i("myTag explanation", data);
-                        binding.tvExplanation.setText(codeExplanation);
-                        binding.tvExplanationTitle.setText(R.string.explanation_title);
-                        binding.layoutInfo.post(() -> {
-                            infoViewHandler(true);
-                        });
-                        setLoadingProgress(100,0, "Loading", false);
-                    }
+                if(isBtnHelpEnabled) {
+                    setLoadingProgress(0,0, "Loading", false);
+                    repo.analyzeCode(compiledCode, outputStr,Constant.AI_EXPLAIN_CODE, new Repository.RepoCallback<String>() {
+                        @Override
+                        public void onSuccess(String data) {
+                            codeExplanation = StringFormatter.formatSampleCode(data);
+                            Log.i("myTag explanation", data);
+                            binding.tvExplanation.setText(codeExplanation);
+                            binding.tvExplanationTitle.setText(R.string.explanation_title);
+                            binding.layoutInfo.post(() -> {
+                                infoViewHandler(true);
+                            });
+                            setLoadingProgress(100,0, "Loading", false);
+                        }
 
-                    @Override
-                    public void onFailed(String errorMessage) {
-                        Log.e("myTag analyze error: ", errorMessage);
-                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        setLoadingProgress(100,0, "Loading", false);
-                    }
-                });
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            Log.e("myTag analyze error: ", errorMessage);
+                            Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                            setLoadingProgress(100,0, "Loading", false);
+                        }
+                    });
+                }
             }
         });
 
@@ -282,14 +289,12 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
 
     private void btnHelpViewHandler(boolean isShown){
         if(isShown){
-            anim.setPopup(binding.btnHelp);
-            binding.btnHelp.setVisibility(View.VISIBLE);
+            isBtnHelpEnabled = true;
+            binding.imgHelp.setImageResource(R.drawable.baseline_help_outline_24);
         }else{
             Log.i("myTag", "hidding help");
-            binding.btnHelp.setVisibility(View.GONE);
-            anim.scale_down(binding.btnHelp, () -> {
-                binding.btnHelp.setVisibility(View.GONE);
-            });
+            isBtnHelpEnabled = false;
+            binding.imgHelp.setImageResource(R.drawable.baseline_help_outline_grayed_out_24);
         }
     }
 
@@ -427,6 +432,5 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         binding.tvOutput.post(()->{
            binding.tvOutput.setText("WebSocket Error: " + t.getMessage() + "reconnecting...");
         });
-        //Toast.makeText(this, "WebSocket Error: " + t.getMessage() + "reconnecting", Toast.LENGTH_SHORT).show();
     }
 }
