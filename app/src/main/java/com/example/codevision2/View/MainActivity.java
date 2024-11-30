@@ -247,8 +247,8 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         anim.scaleDownRelativeLayoutOnTouchListener(binding.btnAnalyze, new AnimationUI.Callback() {
             @Override
             public void onRelease() {
-                setLoadingProgress(0, 0, "Loading", false);
                 if(isAnalyzeEnabled){
+                    setLoadingProgress(0, 0, "Loading", false);
                     repo.analyzeCode(binding.etCode.getText().toString(), null, Constant.AI_ANALYZE, new Repository.RepoCallback<String>() {
                         @Override
                         public void onSuccess(String data) {

@@ -112,7 +112,7 @@
                         android:id="@+id/etCode"
                         android:layout_width="match_parent"
                         android:layout_height="250dp"
-                        android:text="@string/codeSample"
+                        android:text="@string/codeSample2"
                         android:textColor="@color/white"
                         android:minLines="5"
                         android:maxHeight="300dp"/>
