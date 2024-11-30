@@ -15,7 +15,7 @@
         \t\t System.out.println(\"Hello, \" + name + \"! You are \" + age + \" years old.\");\n
         }}</string>
     <string name="codeSample2">
-        public class Main{\n\t\tpublic static void main(String[] args){\n\t\tSysten.out.println("Hello World");\n\t}\n}
+        public class Main{\n\t\tpublic static void main(String[] args){\n\t\tSystem.out.println(\"Hello World\");\n\t}\n}
     </string>
     <string name="app_title">Code Vision\t</string>
 </resources>
