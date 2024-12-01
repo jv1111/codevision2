@@ -11,6 +11,7 @@ import com.example.codevision2.api.model.AIModel;
 import com.example.codevision2.api.model.CAIReqModel;
 import com.example.codevision2.api.model.CAIResModel;
 import com.example.codevision2.api.model.CompilerModel;
+import com.example.codevision2.api.model.OCR2Model;
 import com.example.codevision2.api.model.OCRResponseModel;
 import com.example.codevision2.api.services.ServiceAI;
 import com.example.codevision2.api.services.ServiceCompiler;
@@ -32,9 +33,11 @@ public class Repository {
     }
 
     private final RetrofitInstance retrofitInstanceOCR = new RetrofitInstance(ENV.OCR_API_URL);
+    private final RetrofitInstance retrofitInstanceOCR2 = new RetrofitInstance(ENV.OCR2_API_URL);
     private final RetrofitInstance retrofitInstanceCAI = new RetrofitInstance(ENV.CAI_API_URL);
 
     private final ServiceOCR ocrService = retrofitInstanceOCR.getRetrofit().create(ServiceOCR.class);
+    private final ServiceOCR ocr2Service = retrofitInstanceOCR2.getRetrofit().create(ServiceOCR.class);
     private final ServiceAI aiService = retrofitInstanceCAI.getRetrofit().create(ServiceAI.class);
 
     private final RetrofitInstance retrofitInstanceCompiler = new RetrofitInstance(ENV.COMPILER_API_URL);
@@ -96,6 +99,23 @@ public class Repository {
             @Override
             public void onFailure(Call<OCRResponseModel> call, Throwable t) {
                 cb.onFailed("Something went wrong.");
+            }
+        });
+    }
+
+    public void getTextFromImage2(String url, RepoCallback<String> cb){
+        Call<OCR2Model> call = ocrService.getTextFromImage2(url, "en");
+        call.enqueue(new Callback<OCR2Model>() {
+            @Override
+            public void onResponse(Call<OCR2Model> call, Response<OCR2Model> response) {
+                String textData = response.body().getData().getText();
+                Log.i("myTag", textData);
+                cb.onSuccess(textData);
+            }
+
+            @Override
+            public void onFailure(Call<OCR2Model> call, Throwable t) {
+                cb.onFailed(t.getMessage());
             }
         });
     }

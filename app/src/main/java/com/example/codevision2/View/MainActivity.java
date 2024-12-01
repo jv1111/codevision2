@@ -398,12 +398,29 @@ public class MainActivity extends AppCompatActivity implements WebSocketCompiler
         });
     }
 
+    private void convertImageToText2(String imageUrl){
+        repo.getTextFromImage2(imageUrl, new Repository.RepoCallback<String>() {
+            @Override
+            public void onSuccess(String data) {
+                setLoadingProgress(100,0, "Finished", true);
+                binding.etCode.setText(data);
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                setLoadingProgress(100,0, "Finished", true);
+            }
+        });
+    }
+
     private void uploadTheCapturedImage(Uri uri){
         storageHelper.uploadImageToFirebase(cam.imageFile.getName(), uri, new StorageHelper.Callback() {
             @Override
             public void onUploadSuccess(String url) {
                 setLoadingProgress(100, ORC_PART_PROGRESS, "Converting the image to text", true);
-                convertImageToText(url);
+                //convertImageToText(url);
+                convertImageToText2(url);
             }
             @Override
             public void onProgressCallback(int progress) {
