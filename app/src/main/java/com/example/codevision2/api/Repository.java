@@ -108,9 +108,14 @@ public class Repository {
         call.enqueue(new Callback<OCR2Model>() {
             @Override
             public void onResponse(Call<OCR2Model> call, Response<OCR2Model> response) {
-                String textData = response.body().getData().getText();
-                Log.i("myTag", textData);
-                cb.onSuccess(textData);
+                try{
+                    String textData = response.body().getData().getText();
+                    Log.i("myTag", textData);
+                    cb.onSuccess(textData);
+                }catch (Exception ex){
+                    Log.i("myTag error: ",ex.getMessage());
+                    cb.onFailed("something went wrong");
+                }
             }
 
             @Override
