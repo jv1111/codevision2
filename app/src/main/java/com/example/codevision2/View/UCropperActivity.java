@@ -76,7 +76,7 @@ public class UCropperActivity extends AppCompatActivity {
         UCrop.of(uri, Uri.fromFile(new File(activity.getCacheDir(), "cropped_image.jpg")))
                 .withOptions(options)
                 .withAspectRatio(1, 1)  // Aspect ratio 1:1 (Square crop)
-                .withMaxResultSize(500, 500)  // Max crop size (500x500)
+                .withMaxResultSize(1000, 1000)  // Max crop size (500x500)
                 .start(activity, Constant.UCROP_REQUEST_CODE);
     }
 
